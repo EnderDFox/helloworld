@@ -57,3 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
+/MyProject.Test/bin
+/MyProject.Test/obj
+/MyProject/bin
+/MyProject/obj
