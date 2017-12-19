@@ -26,15 +26,13 @@ app.use(express.static(__dirname + '/public'));
 app.use(require('body-parser')());
 
 
-var filesData = null;
-
+var filesData = {dir:""};
 function getFilesData(){
-    // if(filesData==null){
-        filesData = {};
-        filesData.files = [];
+    filesData.files = [];
         // parseDir("D:/downloads/a3");
-        parseDir("S:/av/Years/2017.s4");
-    // }
+    if(filesData.dir){
+        parseDir(filesData.dir);
+    }
     return filesData;
 }
 
@@ -67,13 +65,15 @@ app.get('/', function(req, res) {
     res.redirect(303, '/ChangeFileName');
 });
 app.get('/ChangeFileName',function(req,res){
+    filesData.dir = req.query.dir || "";
+    console.log(filesData.dir,"{filesData.dir}");
     res.render('change_file_name',getFilesData());
 });
 app.post('/ChangeFileName/change',function(req,res){
     console.log("/ChangeFileName/change post:",req.body);
     var fileVo = filesData.files[req.body.idIndex];
     var parsedPath = path.parse(fileVo.fullname);
-    var newFullname = path.resolve(parsedPath.dir, req.body.newName)+parsedPath.ext;
+    var newFullname = path.resolve(parsedPath.dir, req.body.newName)+parsedPath.ext.toLowerCase();
     console.log("newFullname:",newFullname);
     if(fileVo.fullname.toLowerCase()==newFullname.toLowerCase()){
         //大小写不敏感时直接rename有问题

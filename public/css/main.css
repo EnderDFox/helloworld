@@ -5,6 +5,13 @@ body{
     font-family:微软雅黑,Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
+.dir{
+    width: 100%;
+}
+.dir_input{
+    width: 60%;
+    padding-left: 60px;
+}
 
 .batch1{
     width: 100%;

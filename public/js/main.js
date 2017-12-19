@@ -13,6 +13,16 @@ function itemMouseOut(idIndex) {
     $("#div_item_" + idIndex).removeClass("bg_yellow");
 }
 
+function onClickDirChange(){
+    var dir = $(".dir_input").prop("value");
+    if(dir){
+        var url = window.location.href;
+        url = url.split("?")[0];
+        dir = dir.replace(/\\/g,"/");
+        window.location.href = url+"?dir="+dir;
+    }
+}
+
 function onSelectAll() {
     var isSelectedAll = true;
     for (var i = 0; i < filesLen; i++) {
