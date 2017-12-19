@@ -1,6 +1,10 @@
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
+body{
+    font-family:微软雅黑,Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
 
 .horizontal {
     float: left;
@@ -8,13 +12,37 @@
 }
 
 .fullname {
-    width: 40%;
+    width: 90%;
 }
 
-.new_name {
+.checkbox{
+}
+
+.selector{
+}
+.curr_name {
     width: 30%;
+    text-align: center;
+}
+
+.preview_name {
+    width: 30%;
+    text-align:center;
 }
 
 .option {
-    width: 20%;
+    width: 30%;
+}
+
+.bg_yellow {
+    background-color: rgba(162, 233, 105, 0.164);
+}
+.btn{
+    width:auto;
+}
+.btn.change{
+    color:green;
+}
+.btn.reset{
+    color: rgba(140, 140, 231, 0.904);
 }
