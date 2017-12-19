@@ -6,12 +6,23 @@ body{
     font-size: 14px;
 }
 
+.batch1{
+    width: 100%;
+}
+.batch2{
+    width: 35%;
+    float: right;
+}
 .horizontal {
     float: left;
     border-style: ridge;
+    border-bottom-color: blueviolet;
 }
 
 .fullname {
+    color: rgba(0, 0, 0, 0.767);
+    font-size: 12px;
+    padding-left: 80px;
     width: 90%;
 }
 
@@ -21,13 +32,17 @@ body{
 .selector{
 }
 .curr_name {
-    width: 30%;
+    width: 34%;
     text-align: center;
 }
 
 .preview_name {
-    width: 30%;
+    width: 33%;
     text-align:center;
+}
+.preview_name_input{
+    width: 100%;
+    text-align: center;
 }
 
 .option {
@@ -35,7 +50,10 @@ body{
 }
 
 .bg_yellow {
-    background-color: rgba(162, 233, 105, 0.164);
+    background-color: rgba(184, 238, 59, 0.76);
+}
+.bg_selected{
+    background-color: aquamarine;
 }
 .btn{
     width:auto;

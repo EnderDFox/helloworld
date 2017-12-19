@@ -29,11 +29,12 @@ app.use(require('body-parser')());
 var filesData = null;
 
 function getFilesData(){
-    if(filesData==null){
+    // if(filesData==null){
         filesData = {};
         filesData.files = [];
-        parseDir("C:/fox/downloads");
-    }
+        // parseDir("D:/downloads/a3");
+        parseDir("S:/av/Years/2017.s4");
+    // }
     return filesData;
 }
 
@@ -45,12 +46,10 @@ function parseDir(dir) {
         var fullname = path.resolve(dir, file);
         var stat = fs.lstatSync(fullname);
         if (stat.isDirectory()) {
-            parseDir(fullname);
+            // parseDir(fullname);
         } else {
             if (file.indexOf(".") == 0) {
                 console.info("[info]", "过滤掉以 . 开头的File");
-            // } else if (path.parse(fullPath).ext == ".ts") {
-                // console.log("[info]", file, "is ts file");
             } else {
                 filesData.files.push(
                     {
@@ -76,85 +75,18 @@ app.post('/ChangeFileName/change',function(req,res){
     var parsedPath = path.parse(fileVo.fullname);
     var newFullname = path.resolve(parsedPath.dir, req.body.newName)+parsedPath.ext;
     console.log("newFullname:",newFullname);
-    fs.rename(fileVo.fullname,newFullname);
-    fileVo.fullname = newFullname;
-    filevo.curr_name = newFullname;
-    res.send({ success: true });
-});
-
-app.get('/about', function(req,res){
-	res.render('about', { 
-		fortune: fortune.getFortune(),
-		pageTestScript: '/qa/tests-about.js' 
-	} );
-});
-app.get('/tours/hood-river', function(req, res){
-	res.render('tours/hood-river');
-});
-app.get('/tours/oregon-coast', function(req, res){
-	res.render('tours/oregon-coast');
-});
-app.get('/tours/request-group-rate', function(req, res){
-	res.render('tours/request-group-rate');
-});
-app.get('/jquery-test', function(req, res){
-	res.render('jquery-test');
-});
-app.get('/nursery-rhyme', function(req, res){
-	res.render('nursery-rhyme');
-});
-app.get('/data/nursery-rhyme', function(req, res){
-	res.json({
-		animal: 'squirrel',
-		bodyPart: 'tail',
-		adjective: 'bushy',
-		noun: 'heck',
-	});
-});
-app.get('/thank-you', function(req, res){
-	res.render('thank-you');
-});
-app.get('/newsletter', function(req, res){
-    // we will learn about CSRF later...for now, we just
-    // provide a dummy value
-    res.render('newsletter', { csrf: 'CSRF token goes here' });
-});
-app.post('/process', function(req, res){
-    if(req.xhr || req.accepts('json,html')==='json'){
-        // if there were an error, we would send { error: 'error description' }
-        res.send({ success: true });
-    } else {
-        // if there were an error, we would redirect to an error page
-        res.redirect(303, '/thank-you');
+    if(fileVo.fullname.toLowerCase()==newFullname.toLowerCase()){
+        //大小写不敏感时直接rename有问题
+        fs.rename(fileVo.fullname,newFullname+".back",function(){
+            fs.rename(newFullname+".back",newFullname);
+        });
+    }else{
+        fs.rename(fileVo.fullname,newFullname);
     }
-});
-app.get('/contest/vacation-photo', function(req, res){
-    var now = new Date();
-    res.render('contest/vacation-photo', { year: now.getFullYear(), month: now.getMonth() });
-});
-app.post('/contest/vacation-photo/:year/:month', function(req, res){
-    var form = new formidable.IncomingForm();
-    form.parse(req, function(err, fields, files){
-        if(err) return res.redirect(303, '/error');
-        console.log('received fields:');
-        console.log(fields);
-        console.log('received files:');
-        console.log(files);
-        res.redirect(303, '/thank-you');
-    });
-});
-
-// 404 catch-all handler (middleware)
-app.use(function(req, res, next){
-	res.status(404);
-	res.render('404');
-});
-
-// 500 error handler (middleware)
-app.use(function(err, req, res, next){
-	console.error(err.stack);
-	res.status(500);
-	res.render('500');
+    fileVo.fullname = newFullname;
+    parsedPath = path.parse(newFullname);
+    fileVo.curr_name = parsedPath.name;
+    res.send({ success: true });
 });
 
 app.listen(app.get('port'), function(){

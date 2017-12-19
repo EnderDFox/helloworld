@@ -17,37 +17,59 @@ function onSelectAll() {
     var isSelectedAll = true;
     for (var i = 0; i < filesLen; i++) {
         var currSelected = $("#div_item_" + i).find(".checkbox").prop("checked");
-        console.log(i, currSelected);
         if (currSelected == false) {
             $("#div_item_" + i).find(".checkbox").prop("checked", true);
+            validateCheckbox($("#div_item_" + i),true);
             isSelectedAll = false;
         }
     }
     if (isSelectedAll) {
         for (i = 0; i < filesLen; i++) {
             $("#div_item_" + i).find(".checkbox").prop("checked", false);
+            validateCheckbox($("#div_item_" + i),false);
         }
     }
 }
-function onResetName(idIndex) {
-    var div = $("#div_item_" + idIndex);
-    div.find(".preview_name_input").prop("value", div.find(".curr_name").text());
+function validateCheckbox(div,checked){
+    if(checked){
+        div.addClass("bg_selected");
+    }else{
+        div.removeClass("bg_selected");
+    }
+}
+function onCheckboxClick(idIndex){
+    var currSelected = $("#div_item_" + idIndex).find(".checkbox").prop("checked");
+    validateCheckbox($("#div_item_" + idIndex),currSelected);
 }
 function onBtnClick(kind, idIndex) {
+    if (idIndex == -1) {
+        //batch
+        for (var i = 0; i < filesLen; i++) {
+            var currSelected = $("#div_item_" + i).find(".checkbox").prop("checked");
+            if (currSelected == true) {
+                onBtnClick(kind, i);
+            }
+        }
+        return;
+    }
     var div = $("#div_item_" + idIndex);
-    if (kind == 0) {
-        if(div.find(".curr_name").text() == div.find(".preview_name_input").prop("value")){
-            alert("Name have not changed");
-        }else{
+    if (kind == -1) {
+        var div = $("#div_item_" + idIndex);
+        div.find(".preview_name_input").prop("value", div.find(".curr_name").text());
+    } else if (kind == 0) {
+        if (div.find(".curr_name").text() == div.find(".preview_name_input").prop("value")) {
+            // alert("Name have not changed");
+            console.log("Name have not changed");
+        } else {
             $.ajax({
                 url: "/ChangeFileName/change",
                 type: 'POST',
-                data: "idIndex="+idIndex+"&newName="+div.find(".preview_name_input").prop("value"),
+                data: "idIndex=" + idIndex + "&newName=" + div.find(".preview_name_input").prop("value"),
                 // data: "{idIndex:"+idIndex+"}",
-                success: function(data){
+                success: function (data) {
                     div.find(".curr_name").text(div.find(".preview_name_input").prop("value"));
                 },
-                error: function(){
+                error: function () {
                     console.log("ajax error");
                 }
             });
