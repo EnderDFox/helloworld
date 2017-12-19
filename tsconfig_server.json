@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    // "sourceRoot": "${workspaceRoot}/src",
+    // "sourceRoot": "src/test1s",
+    "outDir": "bin/js/servers",
+    // "outFile": "bin/js/servers_bundle/bundle_server.js",
+    "removeComments": false,
+    // "watch": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/test1s/*",
+    "src/test2s/*",
+    "src/servers/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // "module": "commonjs",
+    // "target": "es5",
+    // "sourceRoot": "${workspaceRoot}/src",
+    // "sourceRoot": "src/test1s",
+    // "outDir": "bin/js/servers",
+    "outFile": "bin/js/servers_bundle/bundle_server.js",
+    "removeComments": false,
+    // "watch": true,
+    "declaration":true,
+    "sourceMap": true
+  },
+  "include": [
+    // "src/test1s/*",
+    "src/test2s/*",
+    "src/servers/*"
+  ],
+  // "file":[
+    // "src/servers/ServerGate.ts"
+  // ],
+  "exclude": [
+    "src/test2s/index.ts",
+    "node_modules"
+  ]
+}
