@@ -1,0 +1,41 @@
+<Grid x:Name="LayoutRoot" Background="White" Width="400">
+
+    <Grid.ColumnDefinitions>
+
+        <ColumnDefinition Width="Auto"/>
+
+        <ColumnDefinition/>
+
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+
+
+
+    @foreach (Column col in Model.Columns)
+
+    {
+
+        <RowDefinition Height="Auto"/>
+
+    }
+
+
+
+    </Grid.RowDefinitions>
+
+
+
+    @foreach (Column col in Model.Columns)
+
+    {
+
+        var desp = col.Description ?? col.Name;
+
+        <TextBlock Text="@desp" Margin="4" VerticalAlignment="Center"/>
+
+        <TextBox Text="{Binding @col.Name}" Grid.Column="1" Margin="4"/>
+
+    }
+
+</Grid>

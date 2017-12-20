@@ -4,5 +4,17 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\RazorEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\System.Web.Razor.dll</HintPath>
+    </Reference>
+    </ItemGroup>
+
   
 </Project>
