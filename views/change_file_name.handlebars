@@ -6,6 +6,7 @@
     <button class="dirChange" onclick="onClickDirChange()">dir change</button>
 </div>
 <div class="batch1">
+        <button class="btn_dir_back" onclick="onClickBtnDirBack()">back</button>
     <div class="batch2">
         <input type="checkbox" class="checkbox" onclick="onSelectAll();">Select All</input>
         <button class="btn change" onclick="onBtnClick(0,-1)">change</button>
@@ -17,20 +18,27 @@
     </div>
 </div>
 {{#each files}}
-<div style="float:left;width:100%" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">
-    <div class="fullname">{{fullname}}</div>
-    <div class="horizontal curr_name">{{curr_name}}</div>
-    <div class="horizontal preview_name">
-        <input type="text" class="preview_name_input" value="{{{curr_name}}}" />
+    {{#if isDir}}
+    <div style="float:left;width:100%" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">
+        <div class="fullname_dir">{{fullname}}</div>
+        <button class="btn_option_dir" onclick="onClickBtnDir(0,{{idIndex}})">enter</button>
     </div>
-    <div class="horizontal selector"><input type="checkbox" class="checkbox" onclick="onCheckboxClick({{idIndex}});"/></div>
-    <div class="horizontal option">
-        <button class="btn change" onclick="onBtnClick(0,{{idIndex}})">change</button>
-        <button class="btn reset" onclick="onBtnClick(-1,{{idIndex}})">reset</button>
-        <button class="btn option" onclick="onBtnClick(2,{{idIndex}})">lower</button>
-        <button class="btn option" onclick="onBtnClick(1,{{idIndex}})">add -</button>
-        <button class="btn option" onclick="onBtnClick(3,{{idIndex}})">re 2</button>
-        <button class="btn option" onclick="onBtnClick(4,{{idIndex}})">re all</button>
+    {{else}}
+    <div style="float:left;width:100%" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">
+        <div class="fullname">{{fullname}}</div>
+        <div class="horizontal curr_name">{{curr_name}}</div>
+        <div class="horizontal preview_name">
+            <input type="text" class="preview_name_input" value="{{{curr_name}}}" />
+        </div>
+        <div class="horizontal selector"><input type="checkbox" class="checkbox" onclick="onCheckboxClick({{idIndex}});"/></div>
+        <div class="horizontal option">
+            <button class="btn change" onclick="onBtnClick(0,{{idIndex}})">change</button>
+            <button class="btn reset" onclick="onBtnClick(-1,{{idIndex}})">reset</button>
+            <button class="btn option" onclick="onBtnClick(2,{{idIndex}})">lower</button>
+            <button class="btn option" onclick="onBtnClick(1,{{idIndex}})">add -</button>
+            <button class="btn option" onclick="onBtnClick(3,{{idIndex}})">re 2</button>
+            <button class="btn option" onclick="onBtnClick(4,{{idIndex}})">re all</button>
+        </div>
     </div>
-</div>
+    {{/if}}
 {{/each}}

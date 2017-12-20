@@ -51,6 +51,32 @@ function onCheckboxClick(idIndex){
     var currSelected = $("#div_item_" + idIndex).find(".checkbox").prop("checked");
     validateCheckbox($("#div_item_" + idIndex),currSelected);
 }
+function onClickBtnDir(kind,idIndex){
+    var url = window.location.href;
+    url = url.split("?")[0];
+    var dir = $(".fullname_dir").text();
+    dir = dir.replace(/\\/g,"/");
+    window.location.href = url+"?dir="+dir;
+}
+function onClickBtnDirBack(kind,idIndex){
+    var url = window.location.href;
+    var urlSp = url.split("?")[0];
+    if(urlSp.length>=2){
+        url = urlSp[0];
+        var query = urlSp[1];
+        query = query.replace(/\\/g,"/");
+        if(query.indexOf("/")>=-1){
+            var querySp = query.split("=");
+            if(querySp.length>=2){
+                query = querySp[1];
+                querySp = query.split("/");
+                querySp.pop();
+                console.log(querySp.join("/"));
+                // window.location.href = url+"?dir="+querySp.join("/");
+            }
+        }
+    }
+}
 function onBtnClick(kind, idIndex) {
     if (idIndex == -1) {
         //batch

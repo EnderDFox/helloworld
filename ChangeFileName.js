@@ -37,21 +37,32 @@ function getFilesData(){
 }
 
 function parseDir(dir) {
+    console.log("parseDir",dir);
     var files = fs.readdirSync(dir);
     // console.log("[debug]","files",files.length);
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
         var fullname = path.resolve(dir, file);
+        console.log("parseDir item:",fullname);
         var stat = fs.lstatSync(fullname);
-        if (stat.isDirectory()) {
-            // parseDir(fullname);
+        if (file.indexOf(".") == 0) {
+            console.info("[info]", "过滤掉以 . 开头的File");
         } else {
-            if (file.indexOf(".") == 0) {
-                console.info("[info]", "过滤掉以 . 开头的File");
+            if (stat.isDirectory()) {
+                filesData.files.push(
+                    {
+                        idIndex:filesData.files.length,
+                        isDir:true,
+                        fullname:fullname,
+                        curr_name:path.parse(fullname).name
+                    }
+                );
+                // parseDir(fullname);//recursive children folders
             } else {
                 filesData.files.push(
                     {
                         idIndex:filesData.files.length,
+                        isDir:false,
                         fullname:fullname,
                         curr_name:path.parse(fullname).name
                     }

@@ -26,6 +26,23 @@ body{
     border-bottom-color: blueviolet;
 }
 
+.btn_dir_back{
+    float: left;
+    margin-left: 100px;
+}
+.fullname_dir {
+    color: rgba(147, 28, 245, 0.952);
+    font-size: 12px;
+    font-weight:bold;
+    padding-left: 80px;
+    float: left;
+}
+
+.btn_option_dir{
+    margin-left: 50px;
+    float: left;
+}
+
 .fullname {
     color: rgba(0, 0, 0, 0.767);
     font-size: 12px;
