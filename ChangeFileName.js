@@ -1,17 +1,17 @@
 var express = require('express'),
-	fortune = require('./lib/fortune.js'),
+    fortune = require('./lib/fortune.js'),
     formidable = require('formidable');
-    fs = require('fs');
-    path = require('path');
+fs = require('fs');
+path = require('path');
 
 var app = express();
 
 // set up handlebars view engine
 var handlebars = require('express-handlebars').create({
-    defaultLayout:'main',
+    defaultLayout: 'main',
     helpers: {
-        section: function(name, options){
-            if(!this._sections) this._sections = {};
+        section: function (name, options) {
+            if (!this._sections) this._sections = {};
             this._sections[name] = options.fn(this);
             return null;
         }
@@ -26,73 +26,83 @@ app.use(express.static(__dirname + '/public'));
 app.use(require('body-parser')());
 
 
-var filesData = {dir:""};
-function getFilesData(){
+var filesData = { dir: "" };
+function getFilesData() {
     filesData.files = [];
-        // parseDir("D:/downloads/a3");
-    if(filesData.dir){
+    // parseDir("D:/downloads/a3");
+    if (filesData.dir) {
         parseDir(filesData.dir);
     }
     return filesData;
 }
 
 function parseDir(dir) {
-    console.log("parseDir",dir);
+    if(dir==null || dir.trim()==""){
+        return;
+    }
+    if(dir.indexOf("/")==-1){
+        dir += "/";
+    }
+    // console.log("parseDir", dir, path.resolve(dir));
     var files = fs.readdirSync(dir);
     // console.log("[debug]","files",files.length);
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
         var fullname = path.resolve(dir, file);
-        console.log("parseDir item:",fullname);
-        var stat = fs.lstatSync(fullname);
-        if (file.indexOf(".") == 0) {
-            console.info("[info]", "过滤掉以 . 开头的File");
-        } else {
-            if (stat.isDirectory()) {
-                filesData.files.push(
-                    {
-                        idIndex:filesData.files.length,
-                        isDir:true,
-                        fullname:fullname,
-                        curr_name:path.parse(fullname).name
-                    }
-                );
-                // parseDir(fullname);//recursive children folders
+        console.log("parseDir item:", fullname, file);
+        try {
+            var stat = fs.lstatSync(fullname);
+            if (file.indexOf(".") == 0) {
+                console.info("[info]", "过滤掉以 . 开头的File");
             } else {
-                filesData.files.push(
-                    {
-                        idIndex:filesData.files.length,
-                        isDir:false,
-                        fullname:fullname,
-                        curr_name:path.parse(fullname).name
-                    }
-                );
+                if (stat.isDirectory()) {
+                    filesData.files.push(
+                        {
+                            idIndex: filesData.files.length,
+                            isDir: true,
+                            fullname: fullname,
+                            curr_name: path.parse(fullname).name
+                        }
+                    );
+                    // parseDir(fullname);//recursive children folders
+                } else {
+                    filesData.files.push(
+                        {
+                            idIndex: filesData.files.length,
+                            isDir: false,
+                            fullname: fullname,
+                            curr_name: path.parse(fullname).name
+                        }
+                    );
+                }
             }
+        } catch (error) {
+            console.log("error");
         }
     }
 }
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.redirect(303, '/ChangeFileName');
 });
-app.get('/ChangeFileName',function(req,res){
+app.get('/ChangeFileName', function (req, res) {
     filesData.dir = req.query.dir || "";
-    console.log(filesData.dir,"{filesData.dir}");
-    res.render('change_file_name',getFilesData());
+    console.log(filesData.dir, "{filesData.dir}");
+    res.render('change_file_name', getFilesData());
 });
-app.post('/ChangeFileName/change',function(req,res){
-    console.log("/ChangeFileName/change post:",req.body);
+app.post('/ChangeFileName/change', function (req, res) {
+    console.log("/ChangeFileName/change post:", req.body);
     var fileVo = filesData.files[req.body.idIndex];
     var parsedPath = path.parse(fileVo.fullname);
-    var newFullname = path.resolve(parsedPath.dir, req.body.newName)+parsedPath.ext.toLowerCase();
-    console.log("newFullname:",newFullname);
-    if(fileVo.fullname.toLowerCase()==newFullname.toLowerCase()){
+    var newFullname = path.resolve(parsedPath.dir, req.body.newName) + parsedPath.ext.toLowerCase();
+    console.log("newFullname:", newFullname);
+    if (fileVo.fullname.toLowerCase() == newFullname.toLowerCase()) {
         //大小写不敏感时直接rename有问题
-        fs.rename(fileVo.fullname,newFullname+".back",function(){
-            fs.rename(newFullname+".back",newFullname);
+        fs.rename(fileVo.fullname, newFullname + ".back", function () {
+            fs.rename(newFullname + ".back", newFullname);
         });
-    }else{
-        fs.rename(fileVo.fullname,newFullname);
+    } else {
+        fs.rename(fileVo.fullname, newFullname);
     }
     fileVo.fullname = newFullname;
     parsedPath = path.parse(newFullname);
@@ -100,9 +110,9 @@ app.post('/ChangeFileName/change',function(req,res){
     res.send({ success: true });
 });
 
-app.listen(app.get('port'), function(){
-  console.log( 'Express started on http://localhost:' + 
-    app.get('port') + '; press Ctrl-C to terminate.' );
+app.listen(app.get('port'), function () {
+    console.log('Express started on http://localhost:' +
+        app.get('port') + '; press Ctrl-C to terminate.');
 });
 
 

@@ -19,12 +19,12 @@
 </div>
 {{#each files}}
     {{#if isDir}}
-    <div style="float:left;width:100%" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">
+    <div class="item_div" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">
         <div class="fullname_dir">{{fullname}}</div>
         <button class="btn_option_dir" onclick="onClickBtnDir(0,{{idIndex}})">enter</button>
     </div>
     {{else}}
-    <div style="float:left;width:100%" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">
+    <div class="item_div" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">
         <div class="fullname">{{fullname}}</div>
         <div class="horizontal curr_name">{{curr_name}}</div>
         <div class="horizontal preview_name">

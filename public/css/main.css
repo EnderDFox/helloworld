@@ -5,6 +5,12 @@ body{
     font-family:微软雅黑,Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
+.item_div{
+    float: left;
+    width: 100%;
+    border-style: ridge;
+    border-color: rgb(172, 167, 177);
+}
 .dir{
     width: 100%;
 }
@@ -22,8 +28,6 @@ body{
 }
 .horizontal {
     float: left;
-    border-style: ridge;
-    border-bottom-color: blueviolet;
 }
 
 .btn_dir_back{
