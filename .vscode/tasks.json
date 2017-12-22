@@ -5,7 +5,7 @@
     "tasks": [
         {
             "type": "typescript",
-            "label": "build tsc client",
+            "label": "build tsc",
             "tsconfig": "tsconfig.json",
             "problemMatcher": [
                 "$tsc"
@@ -23,8 +23,11 @@
         },
         {
             "type": "shell",
-            "label": "shell example",
-            "command": "node -v",
+            "label": "StaticServer",
+            "command": "node",
+            "args": [
+                "bin/js/StaticServer.js"
+            ],
             "presentation": {
                 "echo": true,
                 "reveal": "always",

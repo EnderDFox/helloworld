@@ -2,17 +2,17 @@
 <html>
     <head>
         <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-        <script src="../bin/js/webgl.js"></script>
+        <script src="../bin/js/DrawPoint.js"></script>
         <title>TypeScript Greeter</title>
     </head>
     <body>
         <canvas id="canvas" width="400px" height="400px"></canvas>
         <div>
-            <input type="text" id="p0" value="0"/>
-            <button class="referesh" onclick="clientGate.onClickBtnRefresh()">change</button>
+            <input type="text" id="p0" value="0" onkeyup="drawPoint.onClickBtnRefresh()"/>
+            <button class="referesh" onclick="drawPoint.onClickBtnRefresh()">change</button>
         </div>
         <script>
-            var clientGate = new ClientGate();
+            var drawPoint = new DrawPoint();
         </script>
     </body>
 </html>

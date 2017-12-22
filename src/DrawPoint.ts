@@ -1,4 +1,4 @@
-class ClientGate {
+class DrawPoint {
     public x: number = 0;
     constructor() {
         this.init();
