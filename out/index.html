@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="../bin/js/webgl.js"></script>
+        <title>TypeScript Greeter</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="400px" height="400px"></canvas>
+        <div>
+            <input type="text" id="p0" value="0"/>
+            <button class="referesh" onclick="clientGate.onClickBtnRefresh()">change</button>
+        </div>
+        <script>
+            var clientGate = new ClientGate();
+        </script>
+    </body>
+</html>

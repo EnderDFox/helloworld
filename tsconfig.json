@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    // "sourceRoot": "${workspaceRoot}/src",
+    // "sourceRoot": "src/test1s",
+    "outDir": "bin/js",
+    // "outFile": "bin/js/clients/bundle_client_vs.js",
+    "removeComments": false,
+    // "watch": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
