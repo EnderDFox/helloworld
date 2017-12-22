@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+/Library
+/Temp
+/.vs/unity5.5.4f1/v14/.suo
