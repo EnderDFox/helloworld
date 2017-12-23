@@ -9,17 +9,31 @@ class MultiTextureWithWater {
     return MultiTextureWithWater._si;
   }
 
-  VSHADER_SOURCE: string;// Vertex shader program
-  FSHADER_SOURCE: string;// Fragment shader program
   public gl: WebGLRenderingContext;
-  pos_offsetUV: number = 0;
+  public program: WebGLProgram;
+  pos_offsetUV: WebGLUniformLocation;
   val_offsetUV: number = 0;
   g_texUnit0: boolean = false;
   g_texUnit1: boolean = false;
 
   public init() {
-    console.log("MultiTextureWithWater.init()");
-    console.log(MultiTextureWithWater.si);
+    Q.all<string>([
+      Q.Promise<string>((resolve, reject) => {
+        $.get("shaders/standard_vs.txt", null, (data) => {
+          resolve(data);
+        }, "text");
+        //reject("t1 error");
+      }),
+      Q.Promise<string>((resolve, reject) => {
+        $.get("shaders/MultiTextureWithWater_fs.txt", null, (data) => {
+          resolve(data);
+        }, "text");
+      })
+    ]).then((values) => {
+      // console.log(values.length);
+      this.initWebgl(values[0], values[1]);
+    });
+    /*
     $.get("shaders/standard_vs.txt", null, (data) => {
       this.VSHADER_SOURCE = data;
       this.validateInit();
@@ -28,13 +42,9 @@ class MultiTextureWithWater {
       this.FSHADER_SOURCE = data;
       this.validateInit();
     }, "text");
+    */
   }
-  public validateInit() {
-    if (this.VSHADER_SOURCE && this.FSHADER_SOURCE) {
-      this.initWebgl();
-    }
-  }
-  public initWebgl() {
+  public initWebgl(vs: string, fs: string) {
     // Retrieve <canvas> element
     var canvas: HTMLElement = document.getElementById('webgl');
     // Get the rendering context for WebGL
@@ -43,15 +53,15 @@ class MultiTextureWithWater {
       console.log('Failed to get the rendering context for WebGL');
       return;
     }
-
+    this.program = initShaders(this.gl,vs,fs);
     // Initialize shaders
-    if (!initShaders(this.gl, this.VSHADER_SOURCE, this.FSHADER_SOURCE)) {
+    if (this.program==null) {
       console.log('Failed to intialize shaders.');
       return;
     }
 
     // Set the vertex information
-    var n: number = this.initVertexBuffers(this.gl);
+    var n: number = this.initVertexBuffers();
     if (n < 0) {
       console.log('Failed to set the vertex information');
       return;
@@ -63,12 +73,13 @@ class MultiTextureWithWater {
     this.gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
     // Set texture
-    if (!this.initTextures(this.gl, n)) {
+    if (!this.initTextures(n)) {
       console.log('Failed to intialize the texture.');
       return;
     }
   }
-  public initVertexBuffers(gl) {
+  public initVertexBuffers() {
+    var gl:WebGLRenderingContext = this.gl;
     var pos = 1.2;
     var verticesTexCoords = new Float32Array([
       // Vertex coordinate, Texture coordinate
@@ -85,14 +96,14 @@ class MultiTextureWithWater {
       console.log('Failed to create the buffer object');
       return -1;
     }
-    this.pos_offsetUV = gl.getUniformLocation(gl.program, 'offsetUV');
+    this.pos_offsetUV = gl.getUniformLocation(this.program, 'offsetUV');
     // Write the positions of vertices to a vertex shader
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexTexCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, verticesTexCoords, gl.STATIC_DRAW);
 
     var FSIZE = verticesTexCoords.BYTES_PER_ELEMENT;
     //Get the storage location of a_Position, assign and enable buffer
-    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+    var a_Position = gl.getAttribLocation(this.program, 'a_Position');
     if (a_Position < 0) {
       console.log('Failed to get the storage location of a_Position');
       return -1;
@@ -101,7 +112,7 @@ class MultiTextureWithWater {
     gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
 
     // Get the storage location of a_TexCoord
-    var a_TexCoord = gl.getAttribLocation(gl.program, 'a_TexCoord');
+    var a_TexCoord = gl.getAttribLocation(this.program, 'a_TexCoord');
     if (a_TexCoord < 0) {
       console.log('Failed to get the storage location of a_TexCoord');
       return -1;
@@ -112,7 +123,8 @@ class MultiTextureWithWater {
     return n;
   }
 
-  public initTextures(gl, n) {
+  public initTextures(n: number) {
+    var gl: WebGLRenderingContext = this.gl;
     // Create a texture object
     var texture0 = gl.createTexture();
     var texture1 = gl.createTexture();
@@ -122,8 +134,8 @@ class MultiTextureWithWater {
     }
 
     // Get the storage location of u_Sampler0 and u_Sampler1
-    var u_Sampler0 = gl.getUniformLocation(gl.program, 'u_Sampler0');
-    var u_Sampler1 = gl.getUniformLocation(gl.program, 'u_Sampler1');
+    var u_Sampler0 = gl.getUniformLocation(this.program, 'u_Sampler0');
+    var u_Sampler1 = gl.getUniformLocation(this.program, 'u_Sampler1');
     if (!u_Sampler0 || !u_Sampler1) {
       console.log('Failed to get the storage location of u_Sampler');
       return false;
@@ -137,8 +149,8 @@ class MultiTextureWithWater {
       return false;
     }
     // Register the event handler to be called when image loading is completed
-    image0.onload = ()=>{this.loadTexture(gl, n, texture0, u_Sampler0, image0, 0);};
-    image1.onload = ()=>{this.loadTexture(gl, n, texture1, u_Sampler1, image1, 1);};
+    image0.onload = () => { this.loadTexture(n, texture0, u_Sampler0, image0, 0); };
+    image1.onload = () => { this.loadTexture(n, texture1, u_Sampler1, image1, 1); };
     // Tell the browser to load an Image
     image0.src = 'resources/shayu.png';
     image1.src = 'resources/water.png';
@@ -146,7 +158,8 @@ class MultiTextureWithWater {
     return true;
   }
   // Specify whether the texture unit is ready to use
-  public loadTexture(gl, n, texture, u_Sampler, image, texUnit) {
+  public loadTexture(n: number, texture, u_Sampler, image: HTMLImageElement, texUnit) {
+    var gl: WebGLRenderingContext = this.gl;
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);// Flip the image's y-axis
     // Make the texture unit active
     if (texUnit == 0) {
