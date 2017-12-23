@@ -1,0 +1,4 @@
+[submodule "ts_common"]
+	path = ts_common
+	url = https://github.com/EnderDFox/H5.git
+	branch = ts_common

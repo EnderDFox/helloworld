@@ -1,3 +1,5 @@
+/// <reference path="../ts_common/utils/MathUtil" />
+
 // MultiTexture.js (c) 2012 matsuda and kanda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -8,29 +10,30 @@ var VSHADER_SOURCE =
   '  gl_Position = a_Position;\n' +
   '  v_TexCoord = a_TexCoord;\n' +
   '}\n';
-  
-  // Fragment shader program
-  var FSHADER_SOURCE =
+
+// Fragment shader program
+var FSHADER_SOURCE =
   '#ifdef GL_ES\n' +
   'precision mediump float;\n' +
   '#endif\n' +
   'uniform sampler2D u_Sampler0;\n' +
   'uniform sampler2D u_Sampler1;\n' +
-  'uniform float u_CosB;\n' + 
+  'uniform float offsetUV;\n' +
   'varying vec2 v_TexCoord;\n' +
   'void main() {\n' +
   '  vec4 color0 = texture2D(u_Sampler0, v_TexCoord);\n' +
   '  vec2 uv1 = v_TexCoord;\n' +
-  '  uv1.x= uv1.x+u_CosB;\n' +
+  '  uv1.x= uv1.x+offsetUV;\n' +
   '  vec4 color1 = texture2D(u_Sampler1, uv1);\n' +
   '  gl_FragColor = color0 + color1*0.7*color0.a;\n' +
-  // '  gl_FragColor = color0;\n' +
   '}\n';
 
-var gl;
+var gl: WebGLRenderingContext;
+var pos_offsetUV: number, val_offsetUV: number = 0;
+var g_texUnit0: boolean = false, g_texUnit1: boolean = false;
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas: HTMLElement = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
   gl = getWebGLContext(canvas);
@@ -46,14 +49,14 @@ function main() {
   }
 
   // Set the vertex information
-  var n = initVertexBuffers(gl);
+  var n: number = initVertexBuffers(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
     return;
   }
 
-  gl.enable(gl.BLEND); 
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);  
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   // Specify the color for clearing <canvas>
   gl.clearColor(0.6, 0.6, 0.6, 1.0);
 
@@ -63,16 +66,14 @@ function main() {
     return;
   }
 }
-var u_CosB;
-var val_CosB = 0;
 function initVertexBuffers(gl) {
   var pos = 1.2;
   var verticesTexCoords = new Float32Array([
     // Vertex coordinate, Texture coordinate
-    -pos,  pos,   0.0, 1.0,
-    -pos, -pos,   0.0, 0.0,
-     pos,  pos,   1.0, 1.0,
-     pos, -pos,   1.0, 0.0,
+    -pos, pos, 0.0, 1.0,
+    -pos, -pos, 0.0, 0.0,
+    pos, pos, 1.0, 1.0,
+    pos, -pos, 1.0, 0.0,
   ]);
   var n = 4; // The number of vertices
 
@@ -82,7 +83,7 @@ function initVertexBuffers(gl) {
     console.log('Failed to create the buffer object');
     return -1;
   }
-  u_CosB = gl.getUniformLocation(gl.program, 'u_CosB');
+  pos_offsetUV = gl.getUniformLocation(gl.program, 'offsetUV');
   // Write the positions of vertices to a vertex shader
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexTexCoordBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, verticesTexCoords, gl.STATIC_DRAW);
@@ -111,7 +112,7 @@ function initVertexBuffers(gl) {
 
 function initTextures(gl, n) {
   // Create a texture object
-  var texture0 = gl.createTexture(); 
+  var texture0 = gl.createTexture();
   var texture1 = gl.createTexture();
   if (!texture0 || !texture1) {
     console.log('Failed to create the texture object');
@@ -134,8 +135,8 @@ function initTextures(gl, n) {
     return false;
   }
   // Register the event handler to be called when image loading is completed
-  image0.onload = function(){ loadTexture(gl, n, texture0, u_Sampler0, image0, 0); };
-  image1.onload = function(){ loadTexture(gl, n, texture1, u_Sampler1, image1, 1); };
+  image0.onload = function () { loadTexture(gl, n, texture0, u_Sampler0, image0, 0); };
+  image1.onload = function () { loadTexture(gl, n, texture1, u_Sampler1, image1, 1); };
   // Tell the browser to load an Image
   image0.src = 'resources/shayu.png';
   image1.src = 'resources/water.png';
@@ -143,7 +144,6 @@ function initTextures(gl, n) {
   return true;
 }
 // Specify whether the texture unit is ready to use
-var g_texUnit0 = false, g_texUnit1 = false; 
 function loadTexture(gl, n, texture, u_Sampler, image, texUnit) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);// Flip the image's y-axis
   // Make the texture unit active
@@ -155,31 +155,23 @@ function loadTexture(gl, n, texture, u_Sampler, image, texUnit) {
     g_texUnit1 = true;
   }
   // Bind the texture object to the target
-  gl.bindTexture(gl.TEXTURE_2D, texture);   
+  gl.bindTexture(gl.TEXTURE_2D, texture);
 
   // Set texture parameters
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   // Set the image to texture
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-  
-  gl.uniform1i(u_Sampler, texUnit);   // Pass the texure unit to u_Sampler
-  
-  // Clear <canvas>
- 
-  setInterval(()=>render(n),30);
-}
-function render(n){
-  val_CosB+=0.003;
-  while(val_CosB>1){
-    val_CosB-=1;
-  }
-  while(val_CosB<0){
-    val_CosB+=1;
-  }
-  gl.uniform1f(u_CosB, val_CosB);
-  gl.clear(gl.COLOR_BUFFER_BIT);
 
+  gl.uniform1i(u_Sampler, texUnit);   // Pass the texure unit to u_Sampler
+
+  // Clear <canvas>
   if (g_texUnit0 && g_texUnit1) {
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);   // Draw the rectangle
+    setInterval(() => render(n), 30);
   }
+}
+function render(n) {
+  val_offsetUV = MathUtil.repeat(val_offsetUV + 0.003, 1);
+  gl.uniform1f(pos_offsetUV, val_offsetUV);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);   // Draw the rectangle
 }
