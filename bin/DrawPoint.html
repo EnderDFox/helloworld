@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-        <script src="../bin/js/DrawPoint.js"></script>
-        <title>TypeScript Greeter</title>
-    </head>
-    <body>
-        <canvas id="canvas" width="400px" height="400px"></canvas>
-        <div>
-            <input type="text" id="p0" value="0" onkeyup="drawPoint.onClickBtnRefresh()"/>
-            <button class="referesh" onclick="drawPoint.onClickBtnRefresh()">change</button>
-        </div>
-        <script>
-            var drawPoint = new DrawPoint();
-        </script>
-    </body>
+
+<head>
+    <meta charset="utf-8" />
+    <title>TypeScript Greeter</title>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="js/bundle.js"></script>
+    <script>
+        function OnLoad() {
+            DrawPoint.si.init();
+        }
+    </script>
+</head>
+
+<body onload="OnLoad()">
+    <canvas id="canvas" width="400px" height="400px"></canvas>
+    <div>
+        <input type="text" id="p0" value="0" onkeyup="DrawPoint.si.onClickBtnRefresh()" />
+        <button onclick="DrawPoint.si.onClickBtnChangeX(-0.1)">&lt;-</button>
+        <button onclick="DrawPoint.si.onClickBtnReset()">o</button>
+        <button onclick="DrawPoint.si.onClickBtnChangeX(+0.1)">-&gt;</button>
+        <button class="btnReferesh" onclick="DrawPoint.si.onClickBtnRefresh()">referesh</button>
+    </div>
+</body>
+
 </html>

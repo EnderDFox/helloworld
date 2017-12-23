@@ -1,8 +1,22 @@
 class DrawPoint {
+    private static _si: DrawPoint;
+    public static get si(): DrawPoint {
+        if (DrawPoint._si == null) {
+            DrawPoint._si = new DrawPoint();
+        }
+        return DrawPoint._si;
+    }
+
     public x: number = 0;
     constructor() {
-        this.init();
-        setInterval(() => this.draw(), 30);
+    }
+    public onClickBtnReset():void{
+        $("#p0").val(0);
+        this.onClickBtnRefresh();
+    }
+    public onClickBtnChangeX(offset:number):void{
+        $("#p0").val((parseFloat($("#p0").val() as string)+offset).toFixed(1));
+        this.onClickBtnRefresh();
     }
     public onClickBtnRefresh(): void {
         // string val = document.getElementById('p0').innerText;
@@ -13,6 +27,10 @@ class DrawPoint {
     private gl: WebGLRenderingContext;
     private shaderProgram:WebGLProgram;
     public init(): void {
+        this.initWebgl();
+        setInterval(() => this.draw(), 30);
+    }
+    initWebgl():void{
         var canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
         this.gl = canvas.getContext("webgl");
         //顶点着色器程序
