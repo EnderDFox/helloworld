@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    // "sourceRoot": "${workspaceRoot}/src",
+    "outDir": "",
+    // "outFile": "gulpfile.js",
+    "removeComments": false,
+    // "watch": true,
+    "sourceMap": true
+  },
+  "include": [
+    "gulpfile.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

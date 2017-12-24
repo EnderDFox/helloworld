@@ -9,5 +9,10 @@
     "jquery": "^3.2.1",
     "path": "^0.12.7",
     "q": "^1.5.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.3",
+    "typescript": "^2.6.2"
   }
 }
