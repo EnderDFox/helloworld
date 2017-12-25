@@ -274,7 +274,8 @@ var MultiTextureWithWater = /** @class */ (function () {
         gl.uniform1i(u_Sampler, texUnit); // Pass the texure unit to u_Sampler
         // Clear <canvas>
         if (this.g_texUnit0 && this.g_texUnit1) {
-            setInterval(function () { return _this.render(n); }, 30);
+            // setInterval(() => this.render(n), 30);
+            window.requestAnimationFrame(function () { _this.render(n); });
         }
     };
     MultiTextureWithWater.prototype.render = function (n) {
@@ -285,4 +286,7 @@ var MultiTextureWithWater = /** @class */ (function () {
     };
     return MultiTextureWithWater;
 }());
+var a = 1;
+var b = 2;
+console.log(a + b);
 //# sourceMappingURL=bundle.js.map

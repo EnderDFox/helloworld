@@ -9,7 +9,9 @@ console.log(path.resolve(__dirname, '../../'));
 app.get('/', function (req, res, next) {
     res.redirect(303, '/bin/index.html');
 });
-app.use(express.static(path.resolve(__dirname, '../../'))); //'C:/fox/projects/helloword/webgl'
+var rootPath = "../../"; //"C:/fox/projects/helloword/webgl";
+// var rootPath:string = "C:/fox/books/code/WebGL/WebGL Programming Guide Code";
+app.use(express.static(path.resolve(__dirname, rootPath)));
 app.use(function (req, res, next) {
     console.log("404", req.url);
 });

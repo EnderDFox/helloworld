@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var gulp = require("gulp");
 var ts = require("gulp-typescript");
 var child_process = require("child_process");
-gulp.task('tsc StaticServer', function (cb) {
+gulp.task('BuildStaticServer', function (cb) {
     var tsProject = ts.createProject('tsconfig.server.json');
     var tsResult = gulp.src("src/StaticServer.ts").pipe(tsProject());
     return tsResult.js.pipe(gulp.dest('bin/js'));
 });
 // gulp.task('launch StaticServer', ['tsc StaticServer'],function (cb) {
-gulp.task('launch StaticServer', function (cb) {
+gulp.task('LaunchStaticServer', function (cb) {
     // console.log('launch StaticServer');//
     var free = child_process.spawn('node', ['bin/js/StaticServer.js']);
     // 捕获标准输出并将其打印到控制台 
@@ -28,6 +28,8 @@ gulp.task('launch StaticServer', function (cb) {
         cb();
     });
 });
-gulp.task('default', ['launch StaticServer'], function () {
+gulp.task('BuildAndLaunchStaticServer', ['BuildStaticServer', 'LaunchStaticServer'], function () {
+});
+gulp.task('default', function () {
 });
 //# sourceMappingURL=gulpfile.js.map

@@ -181,7 +181,8 @@ class MultiTextureWithWater {
 
     // Clear <canvas>
     if (this.g_texUnit0 && this.g_texUnit1) {
-      setInterval(() => this.render(n), 30);
+      // setInterval(() => this.render(n), 30);
+      window.requestAnimationFrame(()=>{this.render(n);});
     }
   }
   public render(n) {
