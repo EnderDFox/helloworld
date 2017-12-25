@@ -9,6 +9,12 @@
             "request": "launch",
             "name": "Launch ChangeFileName.js",
             "program": "${workspaceFolder}\\ChangeFileName.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch meadowlark.js",
+            "program": "${workspaceFolder}\\meadowlark.js"
         }
     ]
 }

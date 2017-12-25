@@ -20,7 +20,8 @@ app.set('view engine', 'handlebars');
 
 app.set('port', process.env.PORT || 3000);
 
-app.use(express.static(__dirname + '/public'));
+// app.use(express.static(__dirname + '/public'));
+app.use(express.static('C:/fox/books/code/WebGL/WebGL Programming Guide Code'));
 app.use(require('body-parser')());
 
 // set 'showTests' context property if the querystring contains test=1
@@ -154,5 +155,5 @@ app.use(function(err, req, res, next){
 
 app.listen(app.get('port'), function(){
   console.log( 'Express started on http://localhost:' + 
-    app.get('port') + '; press Ctrl-C to terminate.' );
+    app.get('port') + '; press Ctrl-C to terminate meadowlark.' );
 });
