@@ -17,6 +17,12 @@
         <button class="btn option" onclick="onBtnClick(4,-1)">re all</button>
     </div>
 </div>
+{{#each randomFiles}}
+    <div class="item_div" id="div_item_{{idIndex}}">
+        <div class="fullname_randomFile">{{fullname}}</div>
+        <button class="btn_open_randomFile" onclick="onClickBtnRandomDir({{idIndex}})">enter</button>
+    </div>
+{{/each}}
 {{#each files}}
     {{#if isDir}}
     <div class="item_div" id="div_item_{{idIndex}}" onmouseover="itemMouseOver({{idIndex}})" onmouseout="itemMouseOut({{idIndex}})">

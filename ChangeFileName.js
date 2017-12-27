@@ -27,20 +27,34 @@ app.use(require('body-parser')());
 
 
 var filesData = { dir: "" };
+var fileAll = new Array();
 function getFilesData() {
     filesData.files = [];
-    // parseDir("D:/downloads/a3");
     if (filesData.dir) {
         parseDir(filesData.dir);
+        getFiles(filesData.dir);
+    }
+    var i = 3;
+    filesData.randomFiles = [];
+    //  = fileAll.slice(0,3);
+    while (i--) {
+        var obj = fileAll[randomInt(fileAll.length - 1)];
+        filesData.randomFiles.push(obj);
     }
     return filesData;
 }
 
+function randomInt(max) {
+    var rs = Math.random() * max;
+    rs = Math.round(rs);
+    return rs;
+}
+
 function parseDir(dir) {
-    if(dir==null || dir.trim()==""){
+    if (dir == null || dir.trim() == "") {
         return;
     }
-    if(dir.indexOf("/")==-1){
+    if (dir.indexOf("/") == -1) {
         dir += "/";
     }
     // console.log("parseDir", dir, path.resolve(dir));
@@ -77,18 +91,61 @@ function parseDir(dir) {
                 }
             }
         } catch (error) {
-            console.log("error");
         }
     }
 }
-
+function getFiles(dir) {
+    if (dir == null || dir.trim() == "") {
+        return;
+    }
+    if (dir.indexOf("/") == -1) {
+        dir += "/";
+    }
+    var files = fs.readdirSync(dir);
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var fullname = path.resolve(dir, file);
+        console.log("parseDir item:", fullname, file);
+        try {
+            var stat = fs.lstatSync(fullname);
+            if (file.indexOf(".") == 0) {
+                console.info("[info]", "过滤掉以 . 开头的File");
+            } else {
+                if (stat.isDirectory()) {
+                    /*  fileAll.push(
+                         {
+                             idIndex: filesData.files.length,
+                             isDir: true,
+                             fullname: fullname,
+                             curr_name: path.parse(fullname).name
+                         }
+                     ); */
+                    getFiles(fullname);//recursive children folders
+                } else {
+                    fileAll.push(
+                        {
+                            idIndex: filesData.files.length,
+                            isDir: false,
+                            fullname: fullname,
+                            curr_name: path.parse(fullname).name
+                        }
+                    );
+                }
+            }
+        } catch (error) {
+        }
+    }
+}
 app.get('/', function (req, res) {
     res.redirect(303, '/ChangeFileName');
 });
 app.get('/ChangeFileName', function (req, res) {
     filesData.dir = req.query.dir || "";
-    console.log(filesData.dir, "{filesData.dir}");
+    // console.log(filesData.dir, "{filesData.dir}");
     res.render('change_file_name', getFilesData());
+});
+app.get('/ChangeFileName/openRandom', function (req, res) {
+    console.log("openRandom",req);
 });
 app.post('/ChangeFileName/change', function (req, res) {
     console.log("/ChangeFileName/change post:", req.body);
@@ -114,5 +171,3 @@ app.listen(app.get('port'), function () {
     console.log('Express started on http://localhost:' +
         app.get('port') + '; press Ctrl-C to terminate.');
 });
-
-
