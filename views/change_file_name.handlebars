@@ -20,7 +20,8 @@
 {{#each randomFiles}}
     <div class="item_div" id="div_item_{{idIndex}}">
         <div class="fullname_randomFile">{{fullname}}</div>
-        <button class="btn_open_randomFile" onclick="onClickBtnRandomDir({{idIndex}})">enter</button>
+        <button class="btn_open_randomFile" onclick="onClickBtnRandomOpenDir({{idIndex}})">open dir</button>
+        <button class="btn_open_randomFile" onclick="onClickBtnRandomOpen({{idIndex}})">play</button>
     </div>
 {{/each}}
 {{#each files}}

@@ -51,10 +51,22 @@ function onCheckboxClick(idIndex){
     var currSelected = $("#div_item_" + idIndex).find(".checkbox").prop("checked");
     validateCheckbox($("#div_item_" + idIndex),currSelected);
 }
-function onClickBtnRandomDir(idIndex){
+function onClickBtnRandomOpenDir(idIndex){
     $.ajax({
-        url: "/ChangeFileName/openRandom",
-        type: 'GET',
+        url: "/ChangeFileName/randomOpenDir",
+        type: 'POST',
+        data: "idIndex=" + idIndex,
+        success: function (data) {
+        },
+        error: function () {
+            console.log("ajax error");
+        }
+    });
+}
+function onClickBtnRandomOpen(idIndex){
+    $.ajax({
+        url: "/ChangeFileName/randomOpen",
+        type: 'POST',
         data: "idIndex=" + idIndex,
         success: function (data) {
         },

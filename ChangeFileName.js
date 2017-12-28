@@ -3,6 +3,7 @@ var express = require('express'),
     formidable = require('formidable');
 fs = require('fs');
 path = require('path');
+var child_process = require('child_process');
 
 var app = express();
 
@@ -34,9 +35,8 @@ function getFilesData() {
         parseDir(filesData.dir);
         getFiles(filesData.dir);
     }
-    var i = 3;
     filesData.randomFiles = [];
-    //  = fileAll.slice(0,3);
+    var i = 10;
     while (i--) {
         var obj = fileAll[randomInt(fileAll.length - 1)];
         filesData.randomFiles.push(obj);
@@ -63,7 +63,7 @@ function parseDir(dir) {
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
         var fullname = path.resolve(dir, file);
-        console.log("parseDir item:", fullname, file);
+        // console.log("parseDir item:", fullname, file);
         try {
             var stat = fs.lstatSync(fullname);
             if (file.indexOf(".") == 0) {
@@ -94,6 +94,7 @@ function parseDir(dir) {
         }
     }
 }
+var ignoreExtname = [".torrent",".jpg",".png",".txt",".mp3"];
 function getFiles(dir) {
     if (dir == null || dir.trim() == "") {
         return;
@@ -105,32 +106,28 @@ function getFiles(dir) {
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
         var fullname = path.resolve(dir, file);
-        console.log("parseDir item:", fullname, file);
+        // console.log("parseDir item:", fullname, file);
         try {
             var stat = fs.lstatSync(fullname);
             if (file.indexOf(".") == 0) {
-                console.info("[info]", "过滤掉以 . 开头的File");
+                // console.info("[info]", "过滤掉以 . 开头的File",fullname);
+                continue;
+            }
+            var ext = path.extname(fullname).toLowerCase();
+            if (ignoreExtname.indexOf(ext)>-1) {
+                continue;
+            }
+            if (stat.isDirectory()) {
+                getFiles(fullname);//recursive children folders
             } else {
-                if (stat.isDirectory()) {
-                    /*  fileAll.push(
-                         {
-                             idIndex: filesData.files.length,
-                             isDir: true,
-                             fullname: fullname,
-                             curr_name: path.parse(fullname).name
-                         }
-                     ); */
-                    getFiles(fullname);//recursive children folders
-                } else {
-                    fileAll.push(
-                        {
-                            idIndex: filesData.files.length,
-                            isDir: false,
-                            fullname: fullname,
-                            curr_name: path.parse(fullname).name
-                        }
-                    );
-                }
+                fileAll.push(
+                    {
+                        idIndex: fileAll.length,
+                        isDir: false,
+                        fullname: fullname,
+                        curr_name: path.parse(fullname).name
+                    }
+                );
             }
         } catch (error) {
         }
@@ -144,8 +141,17 @@ app.get('/ChangeFileName', function (req, res) {
     // console.log(filesData.dir, "{filesData.dir}");
     res.render('change_file_name', getFilesData());
 });
-app.get('/ChangeFileName/openRandom', function (req, res) {
-    console.log("openRandom",req);
+app.post('/ChangeFileName/randomOpen', function (req, res) {
+    var fileVo = fileAll[req.body.idIndex];
+    console.log("randomOpen", fileVo);
+    child_process.exec("explorer " + fileVo.fullname);
+    res.send({ success: true });
+});
+app.post('/ChangeFileName/randomOpenDir', function (req, res) {
+    var fileVo = fileAll[req.body.idIndex];
+    console.log("randomOpenDir", fileVo);
+    child_process.exec("explorer " + path.parse(fileVo.fullname).dir);
+    res.send({ success: true });
 });
 app.post('/ChangeFileName/change', function (req, res) {
     console.log("/ChangeFileName/change post:", req.body);
@@ -169,5 +175,5 @@ app.post('/ChangeFileName/change', function (req, res) {
 
 app.listen(app.get('port'), function () {
     console.log('Express started on http://localhost:' +
-        app.get('port') + '; press Ctrl-C to terminate.');
+        app.get('port') + ' ; press Ctrl-C to terminate.');
 });
