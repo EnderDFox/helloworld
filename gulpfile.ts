@@ -1,6 +1,11 @@
 import * as gulp from 'gulp';
 import * as ts from 'gulp-typescript';
 import * as child_process from 'child_process'
+gulp.task('MoveNodeModules',function(cb){
+    gulp.src('node_modules/q/q.js').pipe(gulp.dest('bin/lib/node_modules'));
+    gulp.src('node_modules/jquery/dist/jquery.min.js').pipe(gulp.dest('bin/lib/node_modules'));
+    cb();
+});
 
 gulp.task('BuildStaticServer', function (cb) {
     var tsProject = ts.createProject('tsconfig.server.json');
@@ -9,7 +14,7 @@ gulp.task('BuildStaticServer', function (cb) {
 });
 
 // gulp.task('launch StaticServer', ['tsc StaticServer'],function (cb) {
-gulp.task('LaunchStaticServer', function (cb) {
+gulp.task('LaunchStaticServer',['BuildStaticServer'], function (cb) {
     // console.log('launch StaticServer');//
     var free = child_process.spawn('node', ['bin/js/StaticServer.js']);
     // 捕获标准输出并将其打印到控制台 
@@ -29,7 +34,5 @@ gulp.task('LaunchStaticServer', function (cb) {
     });
 });
 
-gulp.task('BuildAndLaunchStaticServer', ['BuildStaticServer','LaunchStaticServer'], function () {
-});
 gulp.task('default',function(){
 });

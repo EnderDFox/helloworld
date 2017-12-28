@@ -181,14 +181,16 @@ class MultiTextureWithWater {
 
     // Clear <canvas>
     if (this.g_texUnit0 && this.g_texUnit1) {
-      // setInterval(() => this.render(n), 30);
-      window.requestAnimationFrame(()=>{this.render(n);});
+      setInterval(() => this.render(n), 30);
+      // window.requestAnimationFrame(()=>{this.render(n);});
     }
   }
   public render(n) {
+    // console.log("render");
     this.val_offsetUV = MathUtil.repeat(this.val_offsetUV + 0.003, 1);
     this.gl.uniform1f(this.pos_offsetUV, this.val_offsetUV);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, n);   // Draw the rectangle
+    // window.requestAnimationFrame(()=>{this.render(n);});
   }
 }
