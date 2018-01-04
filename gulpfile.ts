@@ -7,7 +7,7 @@ gulp.task('MoveNodeModules',function(cb){
     cb();
 });
 
-gulp.task('BuildStaticServer', function (cb) {
+/* gulp.task('BuildStaticServer', function (cb) {
     var tsProject = ts.createProject('tsconfig.server.json');
     var tsResult = gulp.src("src/StaticServer.ts").pipe(tsProject());
     return tsResult.js.pipe(gulp.dest('bin/js'));
@@ -32,7 +32,7 @@ gulp.task('LaunchStaticServer',['BuildStaticServer'], function (cb) {
         console.log('child process eixt ,exit:' + code);
         cb();
     });
-});
+}); */
 
 gulp.task('default',function(){
 });
