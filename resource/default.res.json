@@ -1,0 +1,40 @@
+{
+	"groups": [
+		{
+			"keys": "Package1@atlas0_png,Package1@atlas_kx9f0_png,Package1@atlas_kx9f2_png,Package1_fui,testa1_png,testa2_png",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"url": "assets/fuis/Package1@atlas0.png",
+			"type": "image",
+			"name": "Package1@atlas0_png"
+		},
+		{
+			"url": "assets/fuis/Package1@atlas_kx9f0.png",
+			"type": "image",
+			"name": "Package1@atlas_kx9f0_png"
+		},
+		{
+			"url": "assets/fuis/Package1@atlas_kx9f2.png",
+			"type": "image",
+			"name": "Package1@atlas_kx9f2_png"
+		},
+		{
+			"url": "assets/fuis/Package1.fui",
+			"type": "bin",
+			"name": "Package1_fui"
+		},
+		{
+			"url": "assets/testa1.png",
+			"type": "image",
+			"name": "testa1_png"
+		},
+		{
+			"url": "assets/testa2.png",
+			"type": "image",
+			"name": "testa2_png"
+		}
+	]
+}
