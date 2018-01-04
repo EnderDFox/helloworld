@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="644,124">
+  <displayList>
+    <text id="n2_9acy" name="txt_currCount" xy="0,0" size="644,39" fontSize="30" color="#333333" align="center" vAlign="middle" autoSize="none" strokeColor="#cccccc" text="9999&#xA;">
+      <relation target="" sidePair="right-right"/>
+    </text>
+    <list id="n4_iedb" name="list0" xy="0,42" size="644,40" layout="row" selectionMode="none" overflow="scroll" scroll="horizontal" colGap="1" defaultItem="ui://ra63vp0u9acyj">
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <list id="n5_iedb" name="list1" xy="0,84" size="644,40" layout="row" selectionMode="none" overflow="scroll" scroll="horizontal" colGap="1" defaultItem="ui://ra63vp0u9acyj">
+      <item/>
+      <item/>
+      <item/>
+    </list>
+  </displayList>
+</component>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="500,500">
+  <displayList>
+    <text id="n1_kx9f" name="txt1" xy="114,110" size="327,76" font="ui://ra63vp0ukx9f5" fontSize="30" autoSize="none" text="15+1,14,56"/>
+    <movieclip id="n2_kx9f" name="anim1" src="kx9f2" xy="368,233"/>
+    <movieclip id="n0_kx9f" name="anim2" src="kx9f0" xy="-117,404" rotation="-90"/>
+    <text id="n3_kx9f" name="txt2" xy="218,127" size="196,115" font="宋体" fontSize="30" autoSize="none" text="txtkelfasdlfkjdskalf;dsf"/>
+  </displayList>
+  <transition name="t0" autoPlayRepeat="-1">
+    <item time="0" type="Rotation" target="n0_kx9f" tween="true" startValue="-46" endValue="-127" duration="72"/>
+    <item time="0" type="XY" target="n0_kx9f" tween="true" startValue="-117.95,404" endValue="-63.95,539" duration="72"/>
+  </transition>
+</component>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packageDescription id="ra63vp0u" jpegQuality="80" compressPNG="true">
+  <resources>
+    <movieclip id="kx9f0" name="fish_32.jta" path="/anims/" exported="true" atlas="alone"/>
+    <component id="kx9f1" name="Comp1.xml" path="/" exported="true"/>
+    <movieclip id="kx9f2" name="fish_39.jta" path="/anims/" exported="true" atlas="alone"/>
+    <image id="kx9f3" name="jinbi_1.png" path="/images/" exported="true"/>
+    <image id="kx9f4" name="冰冻(1).png" path="/images/" exported="true"/>
+    <font id="kx9f5" name="GoldNumbers.fnt" path="/Font/" exported="true"/>
+    <image id="kx9f6" name="+.png" path="/Font/image_res/"/>
+    <image id="kx9f7" name=",.png" path="/Font/image_res/"/>
+    <image id="kx9f8" name="0.png" path="/Font/image_res/"/>
+    <image id="kx9f9" name="1.png" path="/Font/image_res/"/>
+    <image id="kx9fa" name="2.png" path="/Font/image_res/"/>
+    <image id="kx9fb" name="3.png" path="/Font/image_res/"/>
+    <image id="kx9fc" name="4.png" path="/Font/image_res/"/>
+    <image id="kx9fd" name="5.png" path="/Font/image_res/"/>
+    <image id="kx9fe" name="6.png" path="/Font/image_res/"/>
+    <image id="kx9ff" name="7.png" path="/Font/image_res/"/>
+    <image id="kx9fg" name="8.png" path="/Font/image_res/"/>
+    <image id="kx9fh" name="9.png" path="/Font/image_res/"/>
+    <component id="9acyi" name="Menu1.xml" path="/" exported="true"/>
+    <component id="9acyj" name="Button1.xml" path="/" exported="true"/>
+  </resources>
+  <publish name="Package1" genCode="true" square="true" rotation="true">
+    <atlas name="默认" index="0"/>
+  </publish>
+</packageDescription>
