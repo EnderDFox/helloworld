@@ -14,7 +14,7 @@ class TestMain {
 		this.menu1.m_list0.itemRenderer = this.list0_itemRender.bind(this);
 		SDKAdapterFG.GObject_addEventListener(this.menu1.m_list0, fairygui.ItemEvent.CLICK, this.list0_itemClick, this);
 		//
-		this.menu1.m_list0.data = ["CPU", "GPU", "FairyGUI"];
+		this.menu1.m_list0.data = ["CPU", "GPU", "FairyGUI", "v8.18.26"];
 		this.menu1.m_list0.numItems = (<Array<string>>this.menu1.m_list0.data).length;
 		this.menu1.m_list0.refreshVirtualList();
 		//
@@ -46,6 +46,8 @@ class TestMain {
 			case 2:
 				this.ui.addChild(new TestFairyGUI().ui);
 				break;
+			case 3:
+				return;
 		}
 		this.menu1.dispose();
 	}

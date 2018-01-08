@@ -1,3 +1,6 @@
+var __reflect = (this && this.__reflect) || function (p, c, t) {
+    p.__class__ = c, t ? t.push(c) : t = [c], p.__types__ = p.__types__ ? t.concat(p.__types__) : t;
+};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,7 +11,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Main = /** @class */ (function (_super) {
+var Main = (function (_super) {
     __extends(Main, _super);
     function Main() {
         var _this = _super.call(this) || this;
@@ -70,7 +73,18 @@ var Main = /** @class */ (function (_super) {
         fairygui.UIPackage.addPackage("Package1");
         //
         root.addChild(new TestMain().ui);
+        new T1b().t1();
     };
     return Main;
 }(egret.DisplayObjectContainer));
+__reflect(Main.prototype, "Main");
+var T1b = (function () {
+    function T1b() {
+        this.times = 100000;
+    }
+    T1b.prototype.t1 = function () {
+    };
+    return T1b;
+}());
+__reflect(T1b.prototype, "T1b");
 //# sourceMappingURL=Main.js.map

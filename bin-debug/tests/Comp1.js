@@ -1,4 +1,7 @@
-var Comp1 = /** @class */ (function () {
+var __reflect = (this && this.__reflect) || function (p, c, t) {
+    p.__class__ = c, t ? t.push(c) : t = [c], p.__types__ = p.__types__ ? t.concat(p.__types__) : t;
+};
+var Comp1 = (function () {
     function Comp1() {
         this.v1x = 0;
         this.v1y = 0;
@@ -35,4 +38,5 @@ var Comp1 = /** @class */ (function () {
     });
     return Comp1;
 }());
+__reflect(Comp1.prototype, "Comp1");
 //# sourceMappingURL=Comp1.js.map

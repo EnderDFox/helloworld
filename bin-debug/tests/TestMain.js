@@ -1,4 +1,7 @@
-var TestMain = /** @class */ (function () {
+var __reflect = (this && this.__reflect) || function (p, c, t) {
+    p.__class__ = c, t ? t.push(c) : t = [c], p.__types__ = p.__types__ ? t.concat(p.__types__) : t;
+};
+var TestMain = (function () {
     function TestMain() {
         fuis.Package1.Package1Binder.bindAll();
         //===
@@ -11,7 +14,7 @@ var TestMain = /** @class */ (function () {
         this.menu1.m_list0.itemRenderer = this.list0_itemRender.bind(this);
         SDKAdapterFG.GObject_addEventListener(this.menu1.m_list0, fairygui.ItemEvent.CLICK, this.list0_itemClick, this);
         //
-        this.menu1.m_list0.data = ["CPU", "GPU", "FairyGUI"];
+        this.menu1.m_list0.data = ["CPU", "GPU", "FairyGUI", "v8.18.26"];
         this.menu1.m_list0.numItems = this.menu1.m_list0.data.length;
         this.menu1.m_list0.refreshVirtualList();
         //
@@ -42,9 +45,12 @@ var TestMain = /** @class */ (function () {
             case 2:
                 this.ui.addChild(new TestFairyGUI().ui);
                 break;
+            case 3:
+                return;
         }
         this.menu1.dispose();
     };
     return TestMain;
 }());
+__reflect(TestMain.prototype, "TestMain");
 //# sourceMappingURL=TestMain.js.map

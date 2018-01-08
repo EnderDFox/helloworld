@@ -1,11 +1,15 @@
+var __reflect = (this && this.__reflect) || function (p, c, t) {
+    p.__class__ = c, t ? t.push(c) : t = [c], p.__types__ = p.__types__ ? t.concat(p.__types__) : t;
+};
 /*
 */
-var SDKAdapter = /** @class */ (function () {
+var SDKAdapter = (function () {
     function SDKAdapter() {
     }
     return SDKAdapter;
 }());
-var SDKAdapterFG = /** @class */ (function () {
+__reflect(SDKAdapter.prototype, "SDKAdapter");
+var SDKAdapterFG = (function () {
     function SDKAdapterFG() {
     }
     SDKAdapterFG.Transition_Play = function (target, onComplete, onCompleteObj, onCompleteParam, times, delay) {
@@ -23,4 +27,5 @@ var SDKAdapterFG = /** @class */ (function () {
     };
     return SDKAdapterFG;
 }());
+__reflect(SDKAdapterFG.prototype, "SDKAdapterFG");
 //# sourceMappingURL=SDKAdapterEgret.js.map

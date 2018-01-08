@@ -1,4 +1,7 @@
-var TestGPUDrawCall = /** @class */ (function () {
+var __reflect = (this && this.__reflect) || function (p, c, t) {
+    p.__class__ = c, t ? t.push(c) : t = [c], p.__types__ = p.__types__ ? t.concat(p.__types__) : t;
+};
+var TestGPUDrawCall = (function () {
     function TestGPUDrawCall() {
         this.list = new Array();
         this._play_to = false;
@@ -100,4 +103,5 @@ var TestGPUDrawCall = /** @class */ (function () {
     };
     return TestGPUDrawCall;
 }());
+__reflect(TestGPUDrawCall.prototype, "TestGPUDrawCall");
 //# sourceMappingURL=TestGPUDrawCall.js.map

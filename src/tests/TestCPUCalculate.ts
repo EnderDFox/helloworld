@@ -18,7 +18,7 @@ class TestCPUCalculate {
 		this.menu1.m_list1.itemRenderer = this.list1_itemRender.bind(this);
 		SDKAdapterFG.GObject_addEventListener(this.menu1.m_list1, fairygui.ItemEvent.CLICK, this.list1_itemClick, this);
 		//
-		this.menu1.m_list1.data = ["tweenUI"];
+		this.menu1.m_list1.data = ["test1"];
 		this.menu1.m_list1.numItems = (<Array<string>>this.menu1.m_list1.data).length;
 		this.menu1.m_list1.refreshVirtualList();
 		// this.menu1.m_list1.visible=false;//TODO: recursion cannot use, because "Uncaught RangeError: Maximum call stack size exceeded"
@@ -27,8 +27,6 @@ class TestCPUCalculate {
 		//
 		this.ui.addChild(this.menu1);
 		TestMain.alignRightBottom(this.menu1);
-		//
-		// console.log(this.calculate_loop(358, 792), this.calculate_recursion(358, 792));
 		//
 		this.calculate();
 	}
@@ -52,10 +50,18 @@ class TestCPUCalculate {
 		var item: fairygui.GButton = evt.itemObject as fairygui.GButton;
 		switch(item.data){
 			case 0:
-				this.tweenUI = !this.tweenUI;
+				// this.tweenUI = !this.tweenUI;
+				var startTime:number = Math.round(new Date().getTime());
+				console.log("calculate_loop start",startTime);
+				this.times = 1000000;
+				var rs:number = this.calculate_loop(358, 792);
+				console.log("calculate_loop result:",rs);
+				var endTime:number = Math.round(new Date().getTime());
+				console.log("calculate_loop end",endTime,endTime-startTime);
+				this.menu1.m_txt_currCount.text = endTime-startTime+","+rs;
 				break;
 		}
-		this.refreshTxt();
+		// this.refreshTxt();
 	}
 	refreshTxt(){
 		this.menu1.m_txt_currCount.text = (this.kind==0?"loop: ":"recursion: ")+this.times.toFixed();
