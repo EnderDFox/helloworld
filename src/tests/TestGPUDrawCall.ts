@@ -14,13 +14,13 @@ class TestGPUDrawCall {
 		this.menu1.m_list0.numItems = (<Array<string>>this.menu1.m_list0.data).length;
 		this.menu1.m_list0.refreshVirtualList();
 		//---list1
-		this.menu1.m_list1.setVirtual();
+		/*this.menu1.m_list1.setVirtual();
 		this.menu1.m_list1.itemRenderer = this.list1_itemRender.bind(this);
 		SDKAdapterFG.GObject_addEventListener(this.menu1.m_list1, fairygui.ItemEvent.CLICK, this.list1_itemClick, this);
 		//
 		this.menu1.m_list1.data = ["tween"];
 		this.menu1.m_list1.numItems = (<Array<string>>this.menu1.m_list1.data).length;
-		this.menu1.m_list1.refreshVirtualList();
+		this.menu1.m_list1.refreshVirtualList();*/
 		this.menu1.m_list1.visible = false;
 		//---
 		TestMain.alignRightBottom(this.menu1);
@@ -51,27 +51,25 @@ class TestGPUDrawCall {
 		var i: number = item.data;
 		switch (i) {
 			case 0:
-				this.play_t0 = !this.play_t0;
+				this._play_tween0 = !this._play_tween0;
 				break;
 		}
 	}
 	tick(time:number): void {
-		for (let i = 0; i < this.list.length; i++) {
-			let item: egret.Bitmap = this.list[i];
-			item.rotation = Math.random()*360;
+		if(this.play_tween0){
+			for (let i = 0; i < this.list.length; i++) {
+				let item: egret.Bitmap = this.list[i];
+				item.rotation++;
+			}
 		}
 		window.requestAnimationFrame(this.tick.bind(this));
 	}
-	private _play_to: boolean = false;
-	public get play_t0(): boolean {
-		return this._play_to;
+	private _play_tween0: boolean = false;
+	public get play_tween0(): boolean {
+		return this._play_tween0;
 	}
-	public set play_t0(val: boolean) {
-		/*this._play_to = val;
-		for (let i = 0; i < this.comps.length; i++) {
-			let item: Comp1 = this.comps[i];
-			item.play_t0 = val;
-		}*/
+	public set play_tween0(val: boolean) {
+		this._play_tween0 = val;
 	}
 	reset(count: number): void {
 		if (count < 0) {
@@ -80,18 +78,18 @@ class TestGPUDrawCall {
 		this.menu1.m_txt_currCount.text = count.toString();
 		for (var i = this.list.length; i < count; i++) {
 			// var txtr:egret.Texture = RES.getRes( "testa"+(i+1) );
-			var txtr:egret.Texture = RES.getRes( "testa"+(i%2==1?1:2)+"_png" );
+			var tex:egret.Texture = RES.getRes( "testa"+(i%2==1?1:2)+"_png" );
             /*** 本示例关键代码段结束 ***/
-            var bird:egret.Bitmap = new egret.Bitmap( txtr );
-            var wHalfBird:number = bird.anchorOffsetX = txtr.textureWidth / 2;
-            var hHalfBird:number = bird.anchorOffsetY = txtr.textureHeight / 2;
-			bird.x = TestProfile.egretRoot.stage.stageWidth * Math.random() ;
-			bird.y = TestProfile.egretRoot.stage.stageHeight * Math.random() ;
+            var bitmap:egret.Bitmap = new egret.Bitmap( tex );
+            var wHalf:number = bitmap.anchorOffsetX = tex.textureWidth / 2;
+            var hHalf:number = bitmap.anchorOffsetY = tex.textureHeight / 2;
+			bitmap.x = TestProfile.egretRoot.stage.stageWidth * Math.random() ;
+			bitmap.y = TestProfile.egretRoot.stage.stageHeight * Math.random() ;
             // bird.x = wHalfBird + ( TestProfile.stage.stageWidth - wHalfBird * 2 ) * Math.random() ;
             // bird.y = hHalfBird + ( this.stage.stageHeight - hHalfBird * 2 ) * Math.random() ;
             // vcBirds.push( bird );
-			this.list.push(bird);
-			TestProfile.egretRoot.addChild(bird);
+			this.list.push(bitmap);
+			TestProfile.egretRoot.addChild(bitmap);
 		}
 		// for (var i = this.comps.length - 1; i >= count; i--) {
 			// this.list[i].remove

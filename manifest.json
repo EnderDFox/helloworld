@@ -21,6 +21,7 @@
 		"bin-debug/tests/TestFairyGUI.js",
 		"bin-debug/tests/TestGPUDrawCall.js",
 		"bin-debug/tests/TestMain.js",
-		"bin-debug/tests/TestProfile.js"
+		"bin-debug/tests/TestProfile.js",
+		"bin-debug/tests/TestTextureMax.js"
 	]
 }

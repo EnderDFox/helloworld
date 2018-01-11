@@ -14,7 +14,7 @@ var TestMain = (function () {
         this.menu1.m_list0.itemRenderer = this.list0_itemRender.bind(this);
         SDKAdapterFG.GObject_addEventListener(this.menu1.m_list0, fairygui.ItemEvent.CLICK, this.list0_itemClick, this);
         //
-        this.menu1.m_list0.data = ["CPU", "GPU", "FairyGUI", "v8.18.26"];
+        this.menu1.m_list0.data = ["CPU", "GPU", "TextureMax", "FairyGUI", "v8.18.26"];
         this.menu1.m_list0.numItems = this.menu1.m_list0.data.length;
         this.menu1.m_list0.refreshVirtualList();
         //
@@ -43,9 +43,12 @@ var TestMain = (function () {
                 this.ui.addChild(new TestGPUDrawCall().ui);
                 break;
             case 2:
-                this.ui.addChild(new TestFairyGUI().ui);
+                this.ui.addChild(new TestTextureMax().ui);
                 break;
             case 3:
+                this.ui.addChild(new TestFairyGUI().ui);
+                break;
+            default:
                 return;
         }
         this.menu1.dispose();

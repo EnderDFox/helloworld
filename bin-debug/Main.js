@@ -73,18 +73,8 @@ var Main = (function (_super) {
         fairygui.UIPackage.addPackage("Package1");
         //
         root.addChild(new TestMain().ui);
-        new T1b().t1();
     };
     return Main;
 }(egret.DisplayObjectContainer));
 __reflect(Main.prototype, "Main");
-var T1b = (function () {
-    function T1b() {
-        this.times = 100000;
-    }
-    T1b.prototype.t1 = function () {
-    };
-    return T1b;
-}());
-__reflect(T1b.prototype, "T1b");
 //# sourceMappingURL=Main.js.map
