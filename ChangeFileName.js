@@ -21,7 +21,7 @@ var handlebars = require('express-handlebars').create({
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 80);
 
 app.use(express.static(__dirname + '/public'));
 app.use(require('body-parser')());
@@ -94,7 +94,7 @@ function parseDir(dir) {
         }
     }
 }
-var ignoreExtname = [".torrent",".jpg",".png",".txt",".mp3"];
+var ignoreExtname = [".torrent",".jpg",".png",".txt",".mp3",".lnk",".url"];
 function getFiles(dir) {
     if (dir == null || dir.trim() == "") {
         return;
@@ -137,7 +137,7 @@ app.get('/', function (req, res) {
     res.redirect(303, '/ChangeFileName');
 });
 app.get('/ChangeFileName', function (req, res) {
-    filesData.dir = req.query.dir || "";
+    filesData.dir = req.query.dir || "S:/av";;
     // console.log(filesData.dir, "{filesData.dir}");
     res.render('change_file_name', getFilesData());
 });
