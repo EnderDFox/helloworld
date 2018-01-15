@@ -9,35 +9,18 @@
             "request": "launch",
             "name": "Chrome Launch",
             // "url": "http://localhost:9300/index.html",
-            "file": "${workspaceRoot}/bin/index.html",
+            "file": "${workspaceRoot}/bin/Chartjs.html",
             "runtimeExecutable": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
             "sourceMaps": true,
             // "userDataDir": "${workspaceRoot}/bin",
             "runtimeArgs": [
-                "--disable-web-security",
+                // "--disable-web-security",
                 // "--nolazy",
                 // "--remote-debugging-port=9222",
+                "--auto-open-devtools-for-tabs",
                 "--allow-file-access-from-files"
             ],
             "webRoot": "${workspaceRoot}"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Server Bundle",
-            "program": "${workspaceFolder}/bin/js/servers_bundle/bundle_server.js",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Server ",
-            "program": "${workspaceFolder}/bin/js/servers/servers/ServerGate.js",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
         }
     ]
 }

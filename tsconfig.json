@@ -3,12 +3,12 @@
     "module": "commonjs",
     "target": "es5",
     "outDir": "bin/js",
+    // "outFile": "bin/js/servers_bundle/bundle_server.js",
     "removeComments": false,
     "sourceMap": true
   },
   "include": [
-    "src/test3s/*",
-    "src/servers/ServerGate3.ts"
+    "src/*"
   ],
   "exclude": [
     "node_modules"
