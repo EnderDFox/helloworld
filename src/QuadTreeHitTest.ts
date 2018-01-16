@@ -10,12 +10,14 @@ class QuadTree {
     parentQuadTree: QuadTree;
     level: number;
     nodes: QuadTree[];
-    objects: IQuadTreeItem[];
+    items: IQuadTreeItem[];
     //---
-    debug_push_count = 0;
+    static debug_itemsPush_count:number = 0;
+    static debug_getIndex_count:number = 0;
+    static debug_isInner_count:number = 0;
 
     constructor(bounds: IQuadTreeItem, parentQuadTree: QuadTree = null) {
-        this.objects = [];
+        this.items = [];
         this.nodes = [];
         this.parentQuadTree = parentQuadTree;
         if (this.parentQuadTree == null) {
@@ -28,7 +30,7 @@ class QuadTree {
     clear() {
         var nodes: QuadTree[] = this.nodes;
         var subnode: QuadTree;
-        this.objects.splice(0, this.objects.length);
+        this.items.splice(0, this.items.length);
         while (nodes.length) {
             subnode = nodes.shift();
             subnode.clear();
@@ -43,13 +45,14 @@ class QuadTree {
         var hHalf = bounds.hHalf;
 
         this.nodes.push(
-            new QuadTree(new QuadTreeRect(bounds.xHalf, y, wHalf, hHalf), this),
-            new QuadTree(new QuadTreeRect(x, y, wHalf, hHalf), this),
-            new QuadTree(new QuadTreeRect(x, bounds.yHalf, wHalf, hHalf), this),
-            new QuadTree(new QuadTreeRect(bounds.xHalf, bounds.yHalf, wHalf, hHalf), this)
+            new QuadTree(new QuadTreeItem(bounds.xHalf, y, wHalf, hHalf), this),
+            new QuadTree(new QuadTreeItem(x, y, wHalf, hHalf), this),
+            new QuadTree(new QuadTreeItem(x, bounds.yHalf, wHalf, hHalf), this),
+            new QuadTree(new QuadTreeItem(bounds.xHalf, bounds.yHalf, wHalf, hHalf), this)
         );
     }
     getIndex(rect: IQuadTreeItem) {
+        QuadTree.debug_getIndex_count++;
         var bounds = this.bounds,
             onTop = rect.y + rect.h <= bounds.yHalf,
             onBottom = rect.y >= bounds.yHalf,
@@ -69,7 +72,7 @@ class QuadTree {
                 return 3;
             }
         }
-        // 如果物体跨越多个象限，则放回-1
+        // 如果物体跨越多个象限，则返回-1
         return -1;
     }
     insert(rect: IQuadTreeItem) {
@@ -82,27 +85,28 @@ class QuadTree {
             }
         }
         //
-        this.objects.push(rect);
-        rect.parentQuadTree = this;
-        this.debug_push_count++;
+        this.items.push(rect);
+        rect.ownerQuadTree = this;
+        QuadTree.debug_itemsPush_count++;
         //
-        if (this.objects.length > QuadTree.MAX_OBJECTS && this.level < QuadTree.MAX_LEVELS) {
+        if (this.items.length > QuadTree.MAX_OBJECTS && this.level < QuadTree.MAX_LEVELS) {
             if(!this.nodes.length){
                 this.split();//拆分
             }
-            for (i = this.objects.length - 1; i >= 0; i--) {
-                index = this.getIndex(this.objects[i]);
+            for (i = this.items.length - 1; i >= 0; i--) {
+                index = this.getIndex(this.items[i]);
                 if (index !== -1) {
-                    rect = this.objects.splice(i, 1)[0];
-                    this.nodes[index].objects.push(rect);
-                    rect.parentQuadTree = this.nodes[index];
-                    this.debug_push_count++;
+                    rect = this.items.splice(i, 1)[0];
+                    this.nodes[index].items.push(rect);
+                    rect.ownerQuadTree = this.nodes[index];
+                    QuadTree.debug_itemsPush_count++;
                     // this.nodes[index].insert(rect);//There is no need to write like this, because there is already a index value, and subNode can't split at this time
                 }
             }
         }
     }
     static isInner(rect: IQuadTreeItem, bounds: IQuadTreeItem) {
+        QuadTree.debug_isInner_count++;
         return rect.x >= bounds.x &&
             rect.x + rect.w <= bounds.x + bounds.w &&
             rect.y >= bounds.y &&
@@ -110,19 +114,24 @@ class QuadTree {
     }
     refresh(root: QuadTree=null) {
         if(root==null){
-            this.debug_push_count = 0;
+            QuadTree.debug_itemsPush_count = 0;
+            QuadTree.debug_getIndex_count = 0;
+            QuadTree.debug_isInner_count = 0;
             root = this;
         }
         var rect: IQuadTreeItem, index: number, i: number, len: number;
 
 
-        for (i = this.objects.length - 1; i >= 0; i--) {
-            rect = this.objects[i];
-
+        for (i = this.items.length - 1; i >= 0; i--) {
+            rect = this.items[i];
+            if(rect.isDirty==false){
+                continue;
+            }
+            rect.isDirty=false;
             // 如果矩形不属于该象限， 且该矩形不是root,则将该矩形重新插入root
             if (!QuadTree.isInner(rect, this.bounds)) {
                 if (this !== root) {
-                    root.insert(this.objects.splice(i, 1)[0]);
+                    root.insert(this.items.splice(i, 1)[0]);
                 }
             }
             /* 没必要插入子对象中, 因为从root insert新的后会导致超过上限再拆分或重新排列
@@ -159,7 +168,7 @@ class QuadTree {
                 }
             }
         }
-        result = result.concat(this.objects);
+        result = result.concat(this.items);
         return result;
     }
     static carve(rect: IQuadTreeItem, cX: number, cY: number) {
@@ -180,15 +189,15 @@ class QuadTree {
             // 只切割X方向
         } else if (carveX) {
             result.push(
-                new QuadTreeRect(rect.x, rect.y, dX, rect.h),
-                new QuadTreeRect(cX, rect.y, rect.w - dX, rect.h)
+                new QuadTreeItem(rect.x, rect.y, dX, rect.h),
+                new QuadTreeItem(cX, rect.y, rect.w - dX, rect.h)
             );
 
             // 只切割Y方向
         } else if (carveY) {
             result.push(
-                new QuadTreeRect(rect.x, rect.y, rect.w, dY),
-                new QuadTreeRect(rect.x, cY, rect.w, rect.h - dY)
+                new QuadTreeItem(rect.x, rect.y, rect.w, dY),
+                new QuadTreeItem(rect.x, cY, rect.w, rect.h - dY)
             );
         }
 
@@ -197,6 +206,7 @@ class QuadTree {
 }
 
 interface IQuadTreeItem {
+    isDirty:boolean;
     x: number;
     y: number;
     w: number;
@@ -205,9 +215,10 @@ interface IQuadTreeItem {
     yHalf: number;
     wHalf: number;
     hHalf: number;
-    parentQuadTree: QuadTree;
+    ownerQuadTree: QuadTree;
 }
-class QuadTreeRect implements IQuadTreeItem {
+class QuadTreeItem implements IQuadTreeItem {
+    isDirty:boolean;
     x: number;
     y: number;
     h: number;
@@ -216,7 +227,7 @@ class QuadTreeRect implements IQuadTreeItem {
     yHalf: number;
     wHalf: number;
     hHalf: number;
-    parentQuadTree: QuadTree;
+    ownerQuadTree: QuadTree;
     constructor(x, y, width, height) {
         this.x = x;
         this.y = y;
@@ -229,6 +240,7 @@ class QuadTreeRect implements IQuadTreeItem {
     }
 }
 class Rect implements IQuadTreeItem {
+    isDirty:boolean;
     speedArr: number[];
     nextSpeedArr: number[];
     x: number;
@@ -239,7 +251,7 @@ class Rect implements IQuadTreeItem {
     yHalf: number;
     wHalf: number;
     hHalf: number;
-    parentQuadTree: QuadTree;
+    ownerQuadTree: QuadTree;
     static tempRectArr = [new Rect(0, 0, 0, 0),
     new Rect(0, 0, 0, 0)];
     constructor(x, y, width, height, speedArr?: number[]) {
@@ -251,17 +263,21 @@ class Rect implements IQuadTreeItem {
     }
 
     moveTo(x: number, y: number) {
+        if(this.x===x && this.y===y) return;
         this.x = x;
         this.y = y;
         this.xHalf = x + this.wHalf;
         this.yHalf = y + this.hHalf;
+        this.isDirty = true;
     }
 
-    resize(width: number, height: number) {
-        this.w = width;
-        this.h = height;
-        this.wHalf = width / 2;
-        this.hHalf = height / 2;
+    resize(w: number, h: number) {
+        if(this.w===w && this.h===h) return;
+        this.w = w;
+        this.h = h;
+        this.wHalf = w / 2;
+        this.hHalf = h / 2;
+        this.isDirty = true;
     }
 
     draw(cxt) {
@@ -476,7 +492,7 @@ class TestQuadTreeShow {
             // 防止溢出画布
             this.rectArr[i].collide(new Rect(0, 0, this.w, this.h), true);
         }
-        console.info(this.collideCount, "`this.collideCount`",this.tree.debug_push_count,"`this.tree.debug_push_count`");
+        console.info(this.collideCount, "`this.collideCount`",QuadTree.debug_itemsPush_count,QuadTree.debug_getIndex_count,QuadTree.debug_isInner_count);
 
         // 绘制
         for (i = 0, len = this.rectArr.length; i < len; i++) {
