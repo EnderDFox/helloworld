@@ -1,7 +1,11 @@
+/**
+ * http://blog.lxjwlt.com/front-end/2014/09/04/quadtree-for-collide-detection.html
+ */
 var QuadTree = /** @class */ (function () {
-    //
     function QuadTree(bounds, parentQuadTree) {
         if (parentQuadTree === void 0) { parentQuadTree = null; }
+        //---
+        this.debug_push_count = 0;
         this.objects = [];
         this.nodes = [];
         this.parentQuadTree = parentQuadTree;
@@ -13,24 +17,6 @@ var QuadTree = /** @class */ (function () {
         }
         this.bounds = bounds;
     }
-    QuadTree.concatArr = function (targetArr) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var arr, i;
-        for (i = 0; i < args.length; i++) {
-            arr = args[i];
-            Array.prototype.push.apply(targetArr, arr);
-        }
-    };
-    QuadTree.spliceArr = function (arr, index, num) {
-        var i, len;
-        for (i = index + num, len = arr.length; i < len; i++) {
-            arr[i - num] = arr[i];
-        }
-        arr.length = len - num;
-    };
     QuadTree.prototype.clear = function () {
         var nodes = this.nodes;
         var subnode;
@@ -49,15 +35,8 @@ var QuadTree = /** @class */ (function () {
         var hHalf = bounds.hHalf;
         this.nodes.push(new QuadTree(new QuadTreeRect(bounds.xHalf, y, wHalf, hHalf), this), new QuadTree(new QuadTreeRect(x, y, wHalf, hHalf), this), new QuadTree(new QuadTreeRect(x, bounds.yHalf, wHalf, hHalf), this), new QuadTree(new QuadTreeRect(bounds.xHalf, bounds.yHalf, wHalf, hHalf), this));
     };
-    QuadTree.prototype.getIndex = function (rect, checkIsInner) {
-        if (checkIsInner === void 0) { checkIsInner = false; }
+    QuadTree.prototype.getIndex = function (rect) {
         var bounds = this.bounds, onTop = rect.y + rect.h <= bounds.yHalf, onBottom = rect.y >= bounds.yHalf, onLeft = rect.x + rect.w <= bounds.xHalf, onRight = rect.x >= bounds.xHalf;
-        // 检测矩形是否溢出象限界限
-        if (checkIsInner &&
-            (Math.abs(rect.xHalf - bounds.xHalf) + rect.wHalf > bounds.wHalf ||
-                Math.abs(rect.yHalf - bounds.yHalf) + rect.hHalf > bounds.hHalf)) {
-            return -1;
-        }
         if (onTop) {
             if (onRight) {
                 return 0;
@@ -74,10 +53,11 @@ var QuadTree = /** @class */ (function () {
                 return 3;
             }
         }
+        // 如果物体跨越多个象限，则放回-1
         return -1;
     };
     QuadTree.prototype.insert = function (rect) {
-        var objs = this.objects, i, index;
+        var i, index;
         if (this.nodes.length) {
             index = this.getIndex(rect);
             if (index !== -1) {
@@ -85,40 +65,57 @@ var QuadTree = /** @class */ (function () {
                 return;
             }
         }
-        objs.push(rect);
-        if (!this.nodes.length &&
-            this.objects.length > QuadTree.MAX_OBJECTS &&
-            this.level < QuadTree.MAX_LEVELS) {
-            this.split();
-            for (i = objs.length - 1; i >= 0; i--) {
-                index = this.getIndex(objs[i]);
+        //
+        this.objects.push(rect);
+        rect.parentQuadTree = this;
+        this.debug_push_count++;
+        //
+        if (this.objects.length > QuadTree.MAX_OBJECTS && this.level < QuadTree.MAX_LEVELS) {
+            if (!this.nodes.length) {
+                this.split(); //拆分
+            }
+            for (i = this.objects.length - 1; i >= 0; i--) {
+                index = this.getIndex(this.objects[i]);
                 if (index !== -1) {
-                    this.nodes[index].insert(objs.splice(i, 1)[0]);
+                    rect = this.objects.splice(i, 1)[0];
+                    this.nodes[index].objects.push(rect);
+                    rect.parentQuadTree = this.nodes[index];
+                    this.debug_push_count++;
+                    // this.nodes[index].insert(rect);//There is no need to write like this, because there is already a index value, and subNode can't split at this time
                 }
             }
         }
     };
+    QuadTree.isInner = function (rect, bounds) {
+        return rect.x >= bounds.x &&
+            rect.x + rect.w <= bounds.x + bounds.w &&
+            rect.y >= bounds.y &&
+            rect.y + rect.h <= bounds.y + bounds.h;
+    };
     QuadTree.prototype.refresh = function (root) {
-        var objs = this.objects, rect, index, i, len;
-        root = root || this;
-        for (i = objs.length - 1; i >= 0; i--) {
-            index = this.getIndex(objs[i], true);
-            // 如果矩形不属于该象限，则将该矩形重新插入
-            if (index === -1) {
+        if (root === void 0) { root = null; }
+        if (root == null) {
+            this.debug_push_count = 0;
+            root = this;
+        }
+        var rect, index, i, len;
+        for (i = this.objects.length - 1; i >= 0; i--) {
+            rect = this.objects[i];
+            // 如果矩形不属于该象限， 且该矩形不是root,则将该矩形重新插入root
+            if (!QuadTree.isInner(rect, this.bounds)) {
                 if (this !== root) {
-                    rect = objs[i];
-                    QuadTree.spliceArr(objs, i, 1);
-                    root.insert(rect);
-                    // root.insert(objs.splice(i, 1)[0]);
+                    root.insert(this.objects.splice(i, 1)[0]);
                 }
+            }
+            /* 没必要插入子对象中, 因为从root insert新的后会导致超过上限再拆分或重新排列
+            else if (this.nodes.length) {
                 // 如果矩形属于该象限 且 该象限具有子象限，则
                 // 将该矩形安插到子象限中
-            }
-            else if (this.nodes.length) {
-                rect = objs[i];
-                QuadTree.spliceArr(objs, i, 1);
-                this.nodes[index].insert(rect);
-            }
+                index = this.getIndex(rect);
+                if (index !== -1) {
+                    this.nodes[index].insert(this.objects.splice(i, 1)[0]);
+                }
+            } */
         }
         // 递归刷新子象限
         for (i = 0, len = this.nodes.length; i < len; i++) {
@@ -127,24 +124,24 @@ var QuadTree = /** @class */ (function () {
     };
     /** 检索可以用鱼碰撞的结果队列 */
     QuadTree.prototype.retrieve = function (rect) {
-        var result = QuadTree.cacheArr;
-        var arr, i, index;
-        if (this.level === 0)
-            result.length = 0;
-        QuadTree.concatArr(result, this.objects);
-        if (this.nodes.length) {
+        var result = [];
+        if (this.nodes.length > 0) {
+            var index;
             index = this.getIndex(rect);
             if (index !== -1) {
-                this.nodes[index].retrieve(rect);
+                result = result.concat(this.nodes[index].retrieve(rect));
             }
             else {
+                // 切割矩形
+                var arr, i;
                 arr = QuadTree.carve(rect, this.bounds.xHalf, this.bounds.yHalf);
                 for (i = arr.length - 1; i >= 0; i--) {
                     index = this.getIndex(arr[i]);
-                    this.nodes[index].retrieve(rect);
+                    result = result.concat(this.nodes[index].retrieve(rect));
                 }
             }
         }
+        result = result.concat(this.objects);
         return result;
     };
     QuadTree.carve = function (rect, cX, cY) {
@@ -168,8 +165,6 @@ var QuadTree = /** @class */ (function () {
     };
     QuadTree.MAX_OBJECTS = 10;
     QuadTree.MAX_LEVELS = 5;
-    //
-    QuadTree.cacheArr = [];
     return QuadTree;
 }());
 var QuadTreeRect = /** @class */ (function () {
@@ -367,7 +362,7 @@ var TestQuadTreeShow = /** @class */ (function () {
             // 防止溢出画布
             this.rectArr[i].collide(new Rect(0, 0, this.w, this.h), true);
         }
-        console.info(this.collideCount, "`this.collideCount`");
+        console.info(this.collideCount, "`this.collideCount`", this.tree.debug_push_count, "`this.tree.debug_push_count`");
         // 绘制
         for (i = 0, len = this.rectArr.length; i < len; i++) {
             this.rectArr[i].run(cTime - this.time);

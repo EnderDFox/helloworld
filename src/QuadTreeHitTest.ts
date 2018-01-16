@@ -1,40 +1,29 @@
+/**
+ * http://blog.lxjwlt.com/front-end/2014/09/04/quadtree-for-collide-detection.html
+ */
 class QuadTree {
     static MAX_OBJECTS = 10;
     static MAX_LEVELS = 5;
     //
     /**自身范围 */
     bounds: IQuadTreeItem;
-    parentQuadTree:QuadTree;
+    parentQuadTree: QuadTree;
     level: number;
     nodes: QuadTree[];
     objects: IQuadTreeItem[];
-    //
-    private static cacheArr: IQuadTreeItem[] = [];
-    //
-    constructor(bounds: IQuadTreeItem, parentQuadTree:QuadTree=null) {
+    //---
+    debug_push_count = 0;
+
+    constructor(bounds: IQuadTreeItem, parentQuadTree: QuadTree = null) {
         this.objects = [];
         this.nodes = [];
         this.parentQuadTree = parentQuadTree;
-        if(this.parentQuadTree==null){
+        if (this.parentQuadTree == null) {
             this.level = 0;
-        }else{
-            this.level = this.parentQuadTree.level+1;
+        } else {
+            this.level = this.parentQuadTree.level + 1;
         }
         this.bounds = bounds;
-    }
-    static concatArr(targetArr, ...args) {
-        var arr, i;
-        for (i = 0; i < args.length; i++) {
-            arr = args[i];
-            Array.prototype.push.apply(targetArr, arr);
-        }
-    }
-    static spliceArr(arr, index, num) {
-        var i, len;
-        for (i = index + num, len = arr.length; i < len; i++) {
-            arr[i - num] = arr[i];
-        }
-        arr.length = len - num;
     }
     clear() {
         var nodes: QuadTree[] = this.nodes;
@@ -60,20 +49,12 @@ class QuadTree {
             new QuadTree(new QuadTreeRect(bounds.xHalf, bounds.yHalf, wHalf, hHalf), this)
         );
     }
-    getIndex(rect: IQuadTreeItem, checkIsInner: boolean = false) {
+    getIndex(rect: IQuadTreeItem) {
         var bounds = this.bounds,
             onTop = rect.y + rect.h <= bounds.yHalf,
             onBottom = rect.y >= bounds.yHalf,
             onLeft = rect.x + rect.w <= bounds.xHalf,
             onRight = rect.x >= bounds.xHalf;
-
-        // 检测矩形是否溢出象限界限
-        if (checkIsInner &&
-            (Math.abs(rect.xHalf - bounds.xHalf) + rect.wHalf > bounds.wHalf ||
-                Math.abs(rect.yHalf - bounds.yHalf) + rect.hHalf > bounds.hHalf)) {
-
-            return -1;
-        }
 
         if (onTop) {
             if (onRight) {
@@ -88,13 +69,11 @@ class QuadTree {
                 return 3;
             }
         }
-
+        // 如果物体跨越多个象限，则放回-1
         return -1;
     }
-    insert(rect:IQuadTreeItem) {
-        var objs = this.objects,
-            i, index;
-
+    insert(rect: IQuadTreeItem) {
+        var i: number, index: number;
         if (this.nodes.length) {
             index = this.getIndex(rect);
             if (index !== -1) {
@@ -102,48 +81,59 @@ class QuadTree {
                 return;
             }
         }
-        objs.push(rect);
-
-        if (!this.nodes.length &&
-            this.objects.length > QuadTree.MAX_OBJECTS &&
-            this.level < QuadTree.MAX_LEVELS) {
-
-            this.split();
-
-            for (i = objs.length - 1; i >= 0; i--) {
-                index = this.getIndex(objs[i]);
+        //
+        this.objects.push(rect);
+        rect.parentQuadTree = this;
+        this.debug_push_count++;
+        //
+        if (this.objects.length > QuadTree.MAX_OBJECTS && this.level < QuadTree.MAX_LEVELS) {
+            if(!this.nodes.length){
+                this.split();//拆分
+            }
+            for (i = this.objects.length - 1; i >= 0; i--) {
+                index = this.getIndex(this.objects[i]);
                 if (index !== -1) {
-                    this.nodes[index].insert(objs.splice(i, 1)[0]);
+                    rect = this.objects.splice(i, 1)[0];
+                    this.nodes[index].objects.push(rect);
+                    rect.parentQuadTree = this.nodes[index];
+                    this.debug_push_count++;
+                    // this.nodes[index].insert(rect);//There is no need to write like this, because there is already a index value, and subNode can't split at this time
                 }
             }
         }
     }
-    refresh(root?: QuadTree) {
-        var objs: IQuadTreeItem[] = this.objects,
-            rect: IQuadTreeItem, index: number, i: number, len: number;
+    static isInner(rect: IQuadTreeItem, bounds: IQuadTreeItem) {
+        return rect.x >= bounds.x &&
+            rect.x + rect.w <= bounds.x + bounds.w &&
+            rect.y >= bounds.y &&
+            rect.y + rect.h <= bounds.y + bounds.h;
+    }
+    refresh(root: QuadTree=null) {
+        if(root==null){
+            this.debug_push_count = 0;
+            root = this;
+        }
+        var rect: IQuadTreeItem, index: number, i: number, len: number;
 
-        root = root || this;
 
-        for (i = objs.length - 1; i >= 0; i--) {
-            index = this.getIndex(objs[i], true);
+        for (i = this.objects.length - 1; i >= 0; i--) {
+            rect = this.objects[i];
 
-            // 如果矩形不属于该象限，则将该矩形重新插入
-            if (index === -1) {
+            // 如果矩形不属于该象限， 且该矩形不是root,则将该矩形重新插入root
+            if (!QuadTree.isInner(rect, this.bounds)) {
                 if (this !== root) {
-                    rect = objs[i];
-                    QuadTree.spliceArr(objs, i, 1);
-                    root.insert(rect);
-                    // root.insert(objs.splice(i, 1)[0]);
-
+                    root.insert(this.objects.splice(i, 1)[0]);
                 }
-
+            }
+            /* 没必要插入子对象中, 因为从root insert新的后会导致超过上限再拆分或重新排列
+            else if (this.nodes.length) {
                 // 如果矩形属于该象限 且 该象限具有子象限，则
                 // 将该矩形安插到子象限中
-            } else if (this.nodes.length) {
-                rect = objs[i];
-                QuadTree.spliceArr(objs, i, 1);
-                this.nodes[index].insert(rect);
-            }
+                index = this.getIndex(rect);
+                if (index !== -1) {
+                    this.nodes[index].insert(this.objects.splice(i, 1)[0]);
+                }
+            } */
         }
 
         // 递归刷新子象限
@@ -153,31 +143,28 @@ class QuadTree {
     }
     /** 检索可以用鱼碰撞的结果队列 */
     retrieve(rect: IQuadTreeItem) {
-        var result = QuadTree.cacheArr;
-        var arr: IQuadTreeItem[], i: number, index: number;
-
-        if (this.level === 0) result.length = 0;
-
-        QuadTree.concatArr(result, this.objects);
-
-        if (this.nodes.length) {
+        var result: IQuadTreeItem[] = [];
+        if (this.nodes.length > 0) {
+            var index: number;
             index = this.getIndex(rect);
             if (index !== -1) {
-                this.nodes[index].retrieve(rect);
+                result = result.concat(this.nodes[index].retrieve(rect));
             } else {
-                arr = QuadTree.carve(rect,this.bounds.xHalf, this.bounds.yHalf);
+                // 切割矩形
+                var arr: IQuadTreeItem[], i: number;
+                arr = QuadTree.carve(rect, this.bounds.xHalf, this.bounds.yHalf);
                 for (i = arr.length - 1; i >= 0; i--) {
                     index = this.getIndex(arr[i]);
-                    this.nodes[index].retrieve(rect);
+                    result = result.concat(this.nodes[index].retrieve(rect));
                 }
             }
         }
-
+        result = result.concat(this.objects);
         return result;
     }
-    static carve(rect:IQuadTreeItem,cX: number, cY: number) {
-        var result:IQuadTreeItem[] = [],
-            temp:IQuadTreeItem[] = [],
+    static carve(rect: IQuadTreeItem, cX: number, cY: number) {
+        var result: IQuadTreeItem[] = [],
+            temp: IQuadTreeItem[] = [],
             dX = cX - rect.x,
             dY = cY - rect.y,
             carveX = dX > 0 && dX < rect.w,
@@ -185,9 +172,9 @@ class QuadTree {
 
         // 切割XY方向
         if (carveX && carveY) {
-            temp = QuadTree.carve(rect,cX, rect.y);
+            temp = QuadTree.carve(rect, cX, rect.y);
             while (temp.length) {
-                result = result.concat(QuadTree.carve(temp.shift(),rect.x, cY));
+                result = result.concat(QuadTree.carve(temp.shift(), rect.x, cY));
             }
 
             // 只切割X方向
@@ -209,16 +196,16 @@ class QuadTree {
     }
 }
 
-interface IQuadTreeItem{
-    x:number;
-    y:number;
-    w:number;
-    h:number;
-    xHalf:number;
-    yHalf:number;
-    wHalf:number;
-    hHalf:number;
-    parentQuadTree:QuadTree;
+interface IQuadTreeItem {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    xHalf: number;
+    yHalf: number;
+    wHalf: number;
+    hHalf: number;
+    parentQuadTree: QuadTree;
 }
 class QuadTreeRect implements IQuadTreeItem {
     x: number;
@@ -229,7 +216,7 @@ class QuadTreeRect implements IQuadTreeItem {
     yHalf: number;
     wHalf: number;
     hHalf: number;
-    parentQuadTree:QuadTree;
+    parentQuadTree: QuadTree;
     constructor(x, y, width, height) {
         this.x = x;
         this.y = y;
@@ -252,7 +239,7 @@ class Rect implements IQuadTreeItem {
     yHalf: number;
     wHalf: number;
     hHalf: number;
-    parentQuadTree:QuadTree;
+    parentQuadTree: QuadTree;
     static tempRectArr = [new Rect(0, 0, 0, 0),
     new Rect(0, 0, 0, 0)];
     constructor(x, y, width, height, speedArr?: number[]) {
@@ -435,7 +422,7 @@ class TestQuadTreeShow {
 
         // 随机创建
         for (let i = 0; i < 100; i++) {
-            if (i < 90 ) {
+            if (i < 90) {
                 this.rectArr.push(
                     new Rect(Math.floor(Math.random() * (this.w - 20)),
                         Math.floor(Math.random() * (this.h - 20)),
@@ -448,8 +435,8 @@ class TestQuadTreeShow {
                 this.rectArr.push(
                     new Rect(Math.floor(Math.random() * (this.w - 20)),
                         Math.floor(Math.random() * (this.h - 20)),
-                        200,200,
-                        [0,0])
+                        200, 200,
+                        [0, 0])
                 );
             }
         }
@@ -489,7 +476,7 @@ class TestQuadTreeShow {
             // 防止溢出画布
             this.rectArr[i].collide(new Rect(0, 0, this.w, this.h), true);
         }
-        console.info(this.collideCount, "`this.collideCount`");
+        console.info(this.collideCount, "`this.collideCount`",this.tree.debug_push_count,"`this.tree.debug_push_count`");
 
         // 绘制
         for (i = 0, len = this.rectArr.length; i < len; i++) {
