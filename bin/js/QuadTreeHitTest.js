@@ -196,7 +196,7 @@ var Rect = /** @class */ (function () {
         if (isInner === void 0) { isInner = false; }
         if (!(rect instanceof Rect))
             return;
-        var tRect1 = Rect.tempRectArr[0], tRect2 = Rect.tempRectArr[1], thisRect, sWidthSum, sHeightSum, dWidth, dHeight, onHorizontal, onVertical, focusPoint;
+        var tRect1 = Rect.tempRectArr[0], tRect2 = Rect.tempRectArr[1], thisRect, sWidthSum, sHeightSum, dWidth, dHeight, onHorizontal, onVertical, focusPointDir;
         if (!isInner) {
             tRect1.copy(this);
             tRect2.copy(rect);
@@ -215,14 +215,14 @@ var Rect = /** @class */ (function () {
             onVertical = dHeight <= 0;
             // 改变方向
             if (onHorizontal) {
-                focusPoint = this.cX > rect.cX ? 1 : -1;
-                this.nextSpeedArr[0] = focusPoint *
-                    (Math.abs(this.nextSpeedArr[0]) + Math.abs(rect.speedArr[0])) / 2;
+                focusPointDir = this.cX > rect.cX ? 1 : -1;
+                // this.nextSpeedArr[0] = focusPointDir * (Math.abs(this.nextSpeedArr[0]) + Math.abs(rect.speedArr[0])) / 2; //Speed is influenced by the other rect
+                this.nextSpeedArr[0] = focusPointDir * (Math.abs(this.nextSpeedArr[0])); //Speed is not influenced by the other rect
             }
             if (onVertical) {
-                focusPoint = tRect1.cY > tRect2.cY ? 1 : -1;
-                this.nextSpeedArr[1] = focusPoint *
-                    (Math.abs(this.nextSpeedArr[1]) + Math.abs(rect.speedArr[1])) / 2;
+                focusPointDir = tRect1.cY > tRect2.cY ? 1 : -1;
+                // this.nextSpeedArr[1] = focusPointDir * (Math.abs(this.nextSpeedArr[1]) + Math.abs(rect.speedArr[1])) / 2;
+                this.nextSpeedArr[1] = focusPointDir * (Math.abs(this.nextSpeedArr[1]));
             }
         }
         else {
@@ -310,10 +310,14 @@ var TestQuadTreeShow = /** @class */ (function () {
         this.canvas.setAttribute('height', this.h.toString());
         // 随机创建
         for (var i = 0; i < 100; i++) {
-            this.rectArr.push(new Rect(Math.floor(Math.random() * (this.w - 20)), Math.floor(Math.random() * (this.h - 20)), Math.floor(Math.random() * 40 + 5), Math.floor(Math.random() * 40 + 5), 
-            // 10,10,
-            // 200,200,
-            [Math.floor(Math.random() * 60 + 20), Math.floor(Math.random() * 60 + 20)]));
+            if (i < 90) {
+                this.rectArr.push(new Rect(Math.floor(Math.random() * (this.w - 20)), Math.floor(Math.random() * (this.h - 20)), Math.floor(Math.random() * 40 + 5), Math.floor(Math.random() * 40 + 5), 
+                // 200,200,
+                [Math.floor(Math.random() * 60 + 20), Math.floor(Math.random() * 60 + 20)]));
+            }
+            else {
+                this.rectArr.push(new Rect(Math.floor(Math.random() * (this.w - 20)), Math.floor(Math.random() * (this.h - 20)), 200, 200, [0, 0]));
+            }
         }
         // 初始化四叉树
         this.tree = new QuadTree(new Rect(0, 0, this.w, this.h));

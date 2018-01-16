@@ -110,9 +110,9 @@ class QuadTree {
             }
         }
     }
-    refresh(root?:QuadTree) {
-        var objs:Rect[] = this.objects,
-            rect:Rect, index:number, i:number, len:number;
+    refresh(root?: QuadTree) {
+        var objs: Rect[] = this.objects,
+            rect: Rect, index: number, i: number, len: number;
 
         root = root || this;
 
@@ -241,8 +241,8 @@ class Rect {
 
         var tRect1 = Rect.tempRectArr[0],
             tRect2 = Rect.tempRectArr[1],
-            thisRect:Rect, sWidthSum:number, sHeightSum:number, dWidth:number, dHeight:number,
-            onHorizontal:boolean, onVertical:boolean, focusPoint:number;
+            thisRect: Rect, sWidthSum: number, sHeightSum: number, dWidth: number, dHeight: number,
+            onHorizontal: boolean, onVertical: boolean, focusPointDir: number;
 
         if (!isInner) {
 
@@ -267,15 +267,15 @@ class Rect {
 
             // 改变方向
             if (onHorizontal) {
-                focusPoint = this.cX > rect.cX ? 1 : -1;
-                this.nextSpeedArr[0] = focusPoint *
-                    (Math.abs(this.nextSpeedArr[0]) + Math.abs(rect.speedArr[0])) / 2;
+                focusPointDir = this.cX > rect.cX ? 1 : -1;
+                // this.nextSpeedArr[0] = focusPointDir * (Math.abs(this.nextSpeedArr[0]) + Math.abs(rect.speedArr[0])) / 2; //Speed is influenced by the other rect
+                this.nextSpeedArr[0] = focusPointDir * (Math.abs(this.nextSpeedArr[0])); //Speed is not influenced by the other rect
             }
 
             if (onVertical) {
-                focusPoint = tRect1.cY > tRect2.cY ? 1 : -1;
-                this.nextSpeedArr[1] = focusPoint *
-                    (Math.abs(this.nextSpeedArr[1]) + Math.abs(rect.speedArr[1])) / 2;
+                focusPointDir = tRect1.cY > tRect2.cY ? 1 : -1;
+                // this.nextSpeedArr[1] = focusPointDir * (Math.abs(this.nextSpeedArr[1]) + Math.abs(rect.speedArr[1])) / 2;
+                this.nextSpeedArr[1] = focusPointDir * (Math.abs(this.nextSpeedArr[1]));
             }
 
         } else {
@@ -327,9 +327,9 @@ class Rect {
 
     // 检查两个矩形是否互相接近
     static isApproach(rect1: Rect, rect2: Rect) {
-     /*    if (1 > 0) {
-            return true;
-        } */
+        /*    if (1 > 0) {
+               return true;
+           } */
         // var tempRect1 = rect1.copy(),
         //     tempRect2 = rect2.copy();
 
@@ -395,15 +395,23 @@ class TestQuadTreeShow {
 
         // 随机创建
         for (let i = 0; i < 100; i++) {
-            this.rectArr.push(
-                new Rect(Math.floor(Math.random() * (this.w - 20)),
-                    Math.floor(Math.random() * (this.h - 20)),
-                    Math.floor(Math.random() * 40 + 5),
-                    Math.floor(Math.random() * 40 + 5),
-                    // 10,10,
-                    // 200,200,
-                    [Math.floor(Math.random() * 60 + 20), Math.floor(Math.random() * 60 + 20)])
-            );
+            if (i < 90 ) {
+                this.rectArr.push(
+                    new Rect(Math.floor(Math.random() * (this.w - 20)),
+                        Math.floor(Math.random() * (this.h - 20)),
+                        Math.floor(Math.random() * 40 + 5),
+                        Math.floor(Math.random() * 40 + 5),
+                        // 200,200,
+                        [Math.floor(Math.random() * 60 + 20), Math.floor(Math.random() * 60 + 20)])
+                );
+            } else {
+                this.rectArr.push(
+                    new Rect(Math.floor(Math.random() * (this.w - 20)),
+                        Math.floor(Math.random() * (this.h - 20)),
+                        200,200,
+                        [0,0])
+                );
+            }
         }
 
         // 初始化四叉树
