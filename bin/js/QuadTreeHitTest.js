@@ -1,10 +1,16 @@
 var QuadTree = /** @class */ (function () {
     //
-    function QuadTree(bounds, level) {
-        if (level === void 0) { level = 0; }
+    function QuadTree(bounds, parentQuadTree) {
+        if (parentQuadTree === void 0) { parentQuadTree = null; }
         this.objects = [];
         this.nodes = [];
-        this.level = level;
+        this.parentQuadTree = parentQuadTree;
+        if (this.parentQuadTree == null) {
+            this.level = 0;
+        }
+        else {
+            this.level = this.parentQuadTree.level + 1;
+        }
         this.bounds = bounds;
     }
     QuadTree.concatArr = function (targetArr) {
@@ -39,17 +45,17 @@ var QuadTree = /** @class */ (function () {
         var bounds = this.bounds;
         var x = bounds.x;
         var y = bounds.y;
-        var sWidth = bounds.sWidth;
-        var sHeight = bounds.sHeight;
-        this.nodes.push(new QuadTree(new Rect(bounds.cX, y, sWidth, sHeight), level + 1), new QuadTree(new Rect(x, y, sWidth, sHeight), level + 1), new QuadTree(new Rect(x, bounds.cY, sWidth, sHeight), level + 1), new QuadTree(new Rect(bounds.cX, bounds.cY, sWidth, sHeight), level + 1));
+        var wHalf = bounds.wHalf;
+        var hHalf = bounds.hHalf;
+        this.nodes.push(new QuadTree(new QuadTreeRect(bounds.xHalf, y, wHalf, hHalf), this), new QuadTree(new QuadTreeRect(x, y, wHalf, hHalf), this), new QuadTree(new QuadTreeRect(x, bounds.yHalf, wHalf, hHalf), this), new QuadTree(new QuadTreeRect(bounds.xHalf, bounds.yHalf, wHalf, hHalf), this));
     };
     QuadTree.prototype.getIndex = function (rect, checkIsInner) {
         if (checkIsInner === void 0) { checkIsInner = false; }
-        var bounds = this.bounds, onTop = rect.y + rect.h <= bounds.cY, onBottom = rect.y >= bounds.cY, onLeft = rect.x + rect.w <= bounds.cX, onRight = rect.x >= bounds.cX;
+        var bounds = this.bounds, onTop = rect.y + rect.h <= bounds.yHalf, onBottom = rect.y >= bounds.yHalf, onLeft = rect.x + rect.w <= bounds.xHalf, onRight = rect.x >= bounds.xHalf;
         // 检测矩形是否溢出象限界限
         if (checkIsInner &&
-            (Math.abs(rect.cX - bounds.cX) + rect.sWidth > bounds.sWidth ||
-                Math.abs(rect.cY - bounds.cY) + rect.sHeight > bounds.sHeight)) {
+            (Math.abs(rect.xHalf - bounds.xHalf) + rect.wHalf > bounds.wHalf ||
+                Math.abs(rect.yHalf - bounds.yHalf) + rect.hHalf > bounds.hHalf)) {
             return -1;
         }
         if (onTop) {
@@ -112,7 +118,6 @@ var QuadTree = /** @class */ (function () {
                 rect = objs[i];
                 QuadTree.spliceArr(objs, i, 1);
                 this.nodes[index].insert(rect);
-                // this.nodes[index].insert(objs.splice(i, 1)[0]);
             }
         }
         // 递归刷新子象限
@@ -120,6 +125,7 @@ var QuadTree = /** @class */ (function () {
             this.nodes[i].refresh(root);
         }
     };
+    /** 检索可以用鱼碰撞的结果队列 */
     QuadTree.prototype.retrieve = function (rect) {
         var result = QuadTree.cacheArr;
         var arr, i, index;
@@ -132,7 +138,7 @@ var QuadTree = /** @class */ (function () {
                 this.nodes[index].retrieve(rect);
             }
             else {
-                arr = rect.carve(this.bounds.cX, this.bounds.cY);
+                arr = QuadTree.carve(rect, this.bounds.xHalf, this.bounds.yHalf);
                 for (i = arr.length - 1; i >= 0; i--) {
                     index = this.getIndex(arr[i]);
                     this.nodes[index].retrieve(rect);
@@ -141,11 +147,43 @@ var QuadTree = /** @class */ (function () {
         }
         return result;
     };
-    //
-    QuadTree.cacheArr = [];
+    QuadTree.carve = function (rect, cX, cY) {
+        var result = [], temp = [], dX = cX - rect.x, dY = cY - rect.y, carveX = dX > 0 && dX < rect.w, carveY = dY > 0 && dY < rect.h;
+        // 切割XY方向
+        if (carveX && carveY) {
+            temp = QuadTree.carve(rect, cX, rect.y);
+            while (temp.length) {
+                result = result.concat(QuadTree.carve(temp.shift(), rect.x, cY));
+            }
+            // 只切割X方向
+        }
+        else if (carveX) {
+            result.push(new QuadTreeRect(rect.x, rect.y, dX, rect.h), new QuadTreeRect(cX, rect.y, rect.w - dX, rect.h));
+            // 只切割Y方向
+        }
+        else if (carveY) {
+            result.push(new QuadTreeRect(rect.x, rect.y, rect.w, dY), new QuadTreeRect(rect.x, cY, rect.w, rect.h - dY));
+        }
+        return result;
+    };
     QuadTree.MAX_OBJECTS = 10;
     QuadTree.MAX_LEVELS = 5;
+    //
+    QuadTree.cacheArr = [];
     return QuadTree;
+}());
+var QuadTreeRect = /** @class */ (function () {
+    function QuadTreeRect(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.w = width;
+        this.h = height;
+        this.xHalf = x + this.wHalf;
+        this.yHalf = y + this.hHalf;
+        this.wHalf = width / 2;
+        this.hHalf = height / 2;
+    }
+    return QuadTreeRect;
 }());
 var Rect = /** @class */ (function () {
     function Rect(x, y, width, height, speedArr) {
@@ -159,14 +197,14 @@ var Rect = /** @class */ (function () {
     Rect.prototype.moveTo = function (x, y) {
         this.x = x;
         this.y = y;
-        this.cX = x + this.sWidth;
-        this.cY = y + this.sHeight;
+        this.xHalf = x + this.wHalf;
+        this.yHalf = y + this.hHalf;
     };
     Rect.prototype.resize = function (width, height) {
         this.w = width;
         this.h = height;
-        this.sWidth = width / 2;
-        this.sHeight = height / 2;
+        this.wHalf = width / 2;
+        this.hHalf = height / 2;
     };
     Rect.prototype.draw = function (cxt) {
         cxt.save();
@@ -201,61 +239,42 @@ var Rect = /** @class */ (function () {
             tRect1.copy(this);
             tRect2.copy(rect);
             // 判断碰撞方向
-            sWidthSum = tRect1.sWidth + tRect2.sWidth;
-            sHeightSum = tRect1.sHeight + tRect2.sHeight;
-            dWidth = sWidthSum - Math.abs(tRect1.cX - tRect2.cX);
-            dHeight = sHeightSum - Math.abs(tRect1.cY - tRect2.cY);
+            sWidthSum = tRect1.wHalf + tRect2.wHalf;
+            sHeightSum = tRect1.hHalf + tRect2.hHalf;
+            dWidth = sWidthSum - Math.abs(tRect1.xHalf - tRect2.xHalf);
+            dHeight = sHeightSum - Math.abs(tRect1.yHalf - tRect2.yHalf);
             while (dWidth > 0 && dHeight > 0) {
                 tRect1.run(-16);
                 tRect2.run(-16);
-                dWidth = sWidthSum - Math.abs(tRect1.cX - tRect2.cX);
-                dHeight = sHeightSum - Math.abs(tRect1.cY - tRect2.cY);
+                dWidth = sWidthSum - Math.abs(tRect1.xHalf - tRect2.xHalf);
+                dHeight = sHeightSum - Math.abs(tRect1.yHalf - tRect2.yHalf);
             }
             onHorizontal = dWidth <= 0;
             onVertical = dHeight <= 0;
             // 改变方向
             if (onHorizontal) {
-                focusPointDir = this.cX > rect.cX ? 1 : -1;
+                focusPointDir = this.xHalf > rect.xHalf ? 1 : -1;
                 // this.nextSpeedArr[0] = focusPointDir * (Math.abs(this.nextSpeedArr[0]) + Math.abs(rect.speedArr[0])) / 2; //Speed is influenced by the other rect
                 this.nextSpeedArr[0] = focusPointDir * (Math.abs(this.nextSpeedArr[0])); //Speed is not influenced by the other rect
             }
             if (onVertical) {
-                focusPointDir = tRect1.cY > tRect2.cY ? 1 : -1;
+                focusPointDir = tRect1.yHalf > tRect2.yHalf ? 1 : -1;
                 // this.nextSpeedArr[1] = focusPointDir * (Math.abs(this.nextSpeedArr[1]) + Math.abs(rect.speedArr[1])) / 2;
                 this.nextSpeedArr[1] = focusPointDir * (Math.abs(this.nextSpeedArr[1]));
             }
         }
         else {
-            if (Math.abs(this.cX - rect.cX) + this.sWidth > rect.sWidth) {
+            if (Math.abs(this.xHalf - rect.xHalf) + this.wHalf > rect.wHalf) {
                 this.nextSpeedArr[0] = -(this.nextSpeedArr[0] || this.speedArr[0]);
-                this.moveTo(this.cX > rect.cX ?
+                this.moveTo(this.xHalf > rect.xHalf ?
                     rect.x + rect.w - this.w : rect.x, this.y);
             }
-            if (Math.abs(this.cY - rect.cY) + this.sHeight > rect.sHeight) {
+            if (Math.abs(this.yHalf - rect.yHalf) + this.hHalf > rect.hHalf) {
                 this.nextSpeedArr[1] = -(this.nextSpeedArr[1] || this.speedArr[1]);
-                this.moveTo(this.x, this.cY > rect.cY ?
+                this.moveTo(this.x, this.yHalf > rect.yHalf ?
                     rect.y + rect.h - this.h : rect.y);
             }
         }
-    };
-    Rect.prototype.carve = function (cX, cY) {
-        var result = [], temp = [], dX = cX - this.x, dY = cY - this.y, carveX = dX > 0 && dX < this.w, carveY = dY > 0 && dY < this.h;
-        // 切割XY方向
-        if (carveX && carveY) {
-            temp = this.carve(cX, this.y);
-            while (temp.length) {
-                result = result.concat(temp.shift().carve(this.x, cY));
-            }
-            // 只切割X方向
-        }
-        else if (carveX) {
-            result.push(new Rect(this.x, this.y, dX, this.h), new Rect(cX, this.y, this.w - dX, this.h));
-            // 只切割Y方向
-        }
-        else if (carveY) {
-            result.push(new Rect(this.x, this.y, this.w, dY), new Rect(this.x, cY, this.w, this.h - dY));
-        }
-        return result;
     };
     // 检查两个矩形是否互相接近
     Rect.isApproach = function (rect1, rect2) {
@@ -274,8 +293,8 @@ var Rect = /** @class */ (function () {
         tRect2.copy(rect2);
         tRect1.run();
         tRect2.run();
-        return +(Math.pow(rect1.cX - rect2.cX, 2) - Math.pow(tRect1.cX - tRect2.cX, 2) +
-            Math.pow(rect1.cY - rect2.cY, 2) - Math.pow(tRect1.cY - tRect2.cY, 2)).toFixed(6) > 0 ?
+        return +(Math.pow(rect1.xHalf - rect2.xHalf, 2) - Math.pow(tRect1.xHalf - tRect2.xHalf, 2) +
+            Math.pow(rect1.yHalf - rect2.yHalf, 2) - Math.pow(tRect1.yHalf - tRect2.yHalf, 2)).toFixed(6) > 0 ?
             true : false;
         // var dX, dY;
         // dX = rect1.cX + rect1.speedArr[0] * 0.016 - rect2.cX + rect2.speedArr[0] * 0.016;
@@ -286,8 +305,8 @@ var Rect = /** @class */ (function () {
     };
     // 检查矩形是否发生碰撞
     Rect.isCollide = function (rect1, rect2) {
-        if (Math.abs(rect1.cX - rect2.cX) < rect1.sWidth + rect2.sWidth &&
-            Math.abs(rect1.cY - rect2.cY) < rect1.sHeight + rect2.sHeight &&
+        if (Math.abs(rect1.xHalf - rect2.xHalf) < rect1.wHalf + rect2.wHalf &&
+            Math.abs(rect1.yHalf - rect2.yHalf) < rect1.hHalf + rect2.hHalf &&
             Rect.isApproach(rect1, rect2)) {
             rect1.collide(rect2);
             rect2.collide(rect1);
