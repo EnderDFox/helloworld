@@ -1,16 +1,19 @@
 /// <reference path="tslib/utils/QuadTree.ts" />
 
 class Rect implements IQuadTreeItem {
-    isDirty:boolean;
+    ownerQuadTree: QuadTree;
+    preItem:IQuadTreeItem;
+    nextItem:IQuadTreeItem;
+    isDirty: boolean;
     speedArr: number[];
     nextSpeedArr: number[];
     x: number;
     y: number;
-    get right():number{
-        return this.x+this.w;
+    get right(): number {
+        return this.x + this.w;
     }
-    get bottom():number{
-        return this.y+this.h;
+    get bottom(): number {
+        return this.y + this.h;
     }
     h: number;
     w: number;
@@ -18,19 +21,18 @@ class Rect implements IQuadTreeItem {
     yHalf: number;
     wHalf: number;
     hHalf: number;
-    ownerQuadTree: QuadTree;
     static tempRectArr = [new Rect(0, 0, 0, 0),
     new Rect(0, 0, 0, 0)];
     constructor(x, y, width, height, speedArr?: number[]) {
         if (!(this instanceof Rect)) return;
-        this.speedArr = speedArr || [20, 20];
+        this.speedArr = speedArr || [0, 0];
         this.nextSpeedArr = this.speedArr.slice();
         this.resize(width, height);
         this.moveTo(x, y);
     }
 
     moveTo(x: number, y: number) {
-        if(this.x===x && this.y===y) return;
+        if (this.x === x && this.y === y) return;
         this.x = x;
         this.y = y;
         this.xHalf = x + this.wHalf;
@@ -39,7 +41,7 @@ class Rect implements IQuadTreeItem {
     }
 
     resize(w: number, h: number) {
-        if(this.w===w && this.h===h) return;
+        if (this.w === w && this.h === h) return;
         this.w = w;
         this.h = h;
         this.wHalf = w / 2;
@@ -195,6 +197,7 @@ class TestQuadTreeShow {
     tree: QuadTree;
     time: number;
     collideCount: number;
+    test1: boolean = false;
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('mycanvas');
         this.cxt = this.canvas.getContext('2d');
@@ -204,23 +207,45 @@ class TestQuadTreeShow {
 
 
         // 随机创建
-        for (let i = 0; i < 100; i++) {
-            if (i < 90) {
-                this.rectArr.push(
-                    new Rect(Math.floor(Math.random() * (this.w - 20)),
-                        Math.floor(Math.random() * (this.h - 20)),
-                        Math.floor(Math.random() * 40 + 5),
-                        Math.floor(Math.random() * 40 + 5),
-                        // 200,200,
-                        [Math.floor(Math.random() * 60 + 20), Math.floor(Math.random() * 60 + 20)])
-                );
-            } else {
-                this.rectArr.push(
-                    new Rect(Math.floor(Math.random() * (this.w - 20)),
-                        Math.floor(Math.random() * (this.h - 20)),
-                        200, 200,
-                        [0, 0])
-                );
+        if (!this.test1) {
+            for (let i = 0; i < 100; i++) {
+                if (i < 90) {
+                    this.rectArr.push(
+                        new Rect(Math.floor(Math.random() * (this.w - 20)),
+                            Math.floor(Math.random() * (this.h - 20)),
+                            Math.floor(Math.random() * 40 + 5),
+                            Math.floor(Math.random() * 40 + 5),
+                            // 200,200,
+                            [Math.floor(Math.random() * 60 + 20), Math.floor(Math.random() * 60 + 20)])
+                    );
+                } else {
+                    this.rectArr.push(
+                        new Rect(Math.floor(Math.random() * (this.w - 20)),
+                            Math.floor(Math.random() * (this.h - 20)),
+                            200, 200,
+                            [0, 0])
+                    );
+                }
+            }
+        } else {
+            for (let i = 0; i < 11; i++) {
+                switch (i) {
+                    case 3:
+                        this.rectArr.push(new Rect(
+                            this.w / 2 - 100, this.h / 2 + 100, 200, 200
+                        ));
+                        break;
+                    case 10:
+                        this.rectArr.push(new Rect(
+                            0, 0, 200, 200
+                        ));
+                        break;
+                    default:
+                        this.rectArr.push(new Rect(
+                            this.w / 2 - 100, this.h / 2 - 100, 200, 200
+                        ));
+                        break;
+                }
             }
         }
 
@@ -259,11 +284,17 @@ class TestQuadTreeShow {
             // 防止溢出画布
             this.rectArr[i].collide(new Rect(0, 0, this.w, this.h), true);
         }
-        console.info(this.collideCount, "`this.collideCount`",QuadTree.debug_itemsPush_count,QuadTree.debug_getIndex_count,QuadTree.debug_isInner_count);
+        console.info(this.collideCount, "`this.collideCount`", QuadTree.debug_itemsPush_count, QuadTree.debug_getIndex_count, QuadTree.debug_isInner_count);
 
+        if (this.test1) {
+            this.rectArr[3].moveTo(0, 0);
+            this.rectArr[10].moveTo(this.w / 2 - 100, this.h / 2 - 100);
+        }
         // 绘制
         for (i = 0, len = this.rectArr.length; i < len; i++) {
-            this.rectArr[i].run(cTime - this.time);
+            if (!this.test1) {
+                this.rectArr[i].run(cTime - this.time);
+            }
             this.rectArr[i].draw(this.cxt);
             this.cxt.fill();
         }
