@@ -1,2 +1,2 @@
-mklink /J src\tslib C:\fox\projects\MKGProject1\tb_client\src\csCommons\tslib
+mklink /J src\tslib ..\..\MKGProject1\tb_client\src\csCommons\tslib
 pause
