@@ -6,6 +6,12 @@ class Rect implements IQuadTreeItem {
     nextSpeedArr: number[];
     x: number;
     y: number;
+    get right():number{
+        return this.x+this.w;
+    }
+    get bottom():number{
+        return this.y+this.h;
+    }
     h: number;
     w: number;
     xHalf: number;
@@ -219,7 +225,7 @@ class TestQuadTreeShow {
         }
 
         // 初始化四叉树
-        this.tree = new QuadTree(new Rect(0, 0, this.w, this.h));
+        this.tree = new QuadTree(new QuadTreeRect(0, this.w, 0, this.h));
         for (let i = 0, len = this.rectArr.length; i < len; i++) {
             this.tree.insert(this.rectArr[i]);
         }
