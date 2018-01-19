@@ -2,6 +2,7 @@ import { setInterval } from "timers";
 
 class PerformanceTest{
     subs:QuadTreeRectTest[] = [];
+    /** 结论 从数组拿 和 从本地变量里拿 属性 数度一样, 普通的加减乘除运算性能消耗不大, 但如果算出了浮点 就很耗了 */
     test1(){
         this.subs.push(new QuadTreeRectTest(12,4234,121,5466));
         this.subs.push(new QuadTreeRectTest(32,1332,142,14462));
