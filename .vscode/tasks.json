@@ -3,7 +3,7 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
-        {
+        /* {
             "type": "typescript",
             "label": "build tsc client",
             "tsconfig": "tsconfig_client_vs.json",
@@ -20,7 +20,7 @@
                 "focus": false,
                 "panel": "shared"
             }
-        },
+        }, */
         {
             "type": "shell",
             "label": "shell example",
