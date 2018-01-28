@@ -13,6 +13,17 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "node BinaryHeap",
+            "program": "${workspaceFolder}/src/TestBinaryHeap.ts",
+            "args": [
+            ],
+            "outFiles": [
+                "${workspaceFolder}/bin/js/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "node Test1",
             "program": "${workspaceFolder}/bin/js/Test1.js"
         },

@@ -1,5 +1,3 @@
-import { setInterval } from "timers";
-
 class PerformanceTest{
     subs:QuadTreeRectTest[] = [];
     /** 结论 从数组拿 和 从本地变量里拿 属性 数度一样, 普通的加减乘除运算性能消耗不大, 但如果算出了浮点 就很耗了 */
