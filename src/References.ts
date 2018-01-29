@@ -1,0 +1,1 @@
+/// <reference path="tslib/interfaces/Finterface.ts" />
