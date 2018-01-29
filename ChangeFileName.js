@@ -1,11 +1,21 @@
 var express = require('express'),
     fortune = require('./lib/fortune.js'),
     formidable = require('formidable');
-fs = require('fs');
-path = require('path');
+var parseArgs = require('minimist');
+
+var fs = require('fs');
+var path = require('path');
+
 var child_process = require('child_process');
 
 var app = express();
+
+var args = parseArgs(process.argv.slice(2), {
+    alias: {
+        // 'dir': 'd',
+        "port": 'p',
+    }
+});
 
 // set up handlebars view engine
 var handlebars = require('express-handlebars').create({
@@ -22,6 +32,7 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 app.set('port', process.env.PORT || 80);
+app.set('port', args.port || 80);
 
 app.use(express.static(__dirname + '/public'));
 app.use(require('body-parser')());
