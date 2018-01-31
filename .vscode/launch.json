@@ -8,13 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "node PerformanceTest",
-            "program": "${workspaceFolder}/bin/js/PerformanceTest.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "node BinaryHeap",
-            "program": "${workspaceFolder}/src/TestBinaryHeap.ts",
+            "program": "${workspaceFolder}/src/PerformanceTest.ts",
             "args": [
             ],
             "outFiles": [
@@ -25,7 +19,12 @@
             "type": "node",
             "request": "launch",
             "name": "node Test1",
-            "program": "${workspaceFolder}/bin/js/Test1.js"
+            "program": "${workspaceFolder}/src/Test1.ts",
+            "args": [
+            ],
+            "outFiles": [
+                "${workspaceFolder}/bin/js/*.js"
+            ]
         },
         {
             "type": "chrome",
