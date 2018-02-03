@@ -42,6 +42,7 @@ var filesData = { dir: "" };
 var fileAll = new Array();
 function getFilesData() {
     filesData.files = [];
+    fileAll = [];
     if (filesData.dir) {
         parseDir(filesData.dir);
         getFiles(filesData.dir);
