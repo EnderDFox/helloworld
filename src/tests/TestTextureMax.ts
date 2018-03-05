@@ -11,7 +11,7 @@ class TestTextureMax {
 		this.menu1.m_list0.itemRenderer = this.list0_itemRender.bind(this);
 		SDKAdapterFG.GObject_addEventListener(this.menu1.m_list0, fairygui.ItemEvent.CLICK, this.list0_itemClick, this);
 		//
-		this.menu1.m_list0.data = ["+1"];
+		this.menu1.m_list0.data = ["+1","+5","+10","+20","+50","+100"];
 		this.menu1.m_list0.numItems = (<Array<string>>this.menu1.m_list0.data).length;
 		this.menu1.m_list0.refreshVirtualList();
 		//---list1
@@ -24,6 +24,7 @@ class TestTextureMax {
 		this.menu1.m_list1.refreshVirtualList();
 		// this.menu1.m_list1.visible = false;
 		//---txt
+		this.menu1.m_txt_currCount.text = "0";
 		// this.menu1.m_txt_currCount.visible = false;
 		//---
 		TestMain.alignRightBottom(this.menu1);
@@ -42,7 +43,8 @@ class TestTextureMax {
 	list0_itemClick(evt: fairygui.ItemEvent): void {
 		var item: fairygui.GButton = evt.itemObject as fairygui.GButton;
 		var i: number = item.data;
-		this.addTexture(parseInt(this.menu1.m_list0.data[i]));
+		this.addTextureCount = parseInt(this.menu1.m_list0.data[i]);
+		this.addTextures();
 	}
 	list1_itemRender(i: number, item: fuis.Package1.UI_Button1): void {
 		item.data = i;
@@ -57,16 +59,24 @@ class TestTextureMax {
 				break;
 		}
 	}
-	addTexture(count: number) {
-		this.imgCount++;
-		this.menu1.m_txt_currCount.text = this.imgCount.toString();
-		RES.getResAsync(`testb${this.imgCount}_png`, this.getResHandler, this);
+	addTextureCount:number;
+	addTextures() {
+		if(this.addTextureCount>0){
+			this.addTextureCount--;
+			this.menu1.enabled=false;
+			this.imgCount++;
+			this.menu1.m_txt_currCount.text = this.imgCount.toString()+" - loading";
+			RES.getResAsync(`testb${this.imgCount}_png`, this.getResHandler, this);
+		}
 	}
 	getResHandler(tex: egret.Texture, url: String) {
+		this.menu1.enabled=true;
 		if (!tex) {
+			this.menu1.m_txt_currCount.text = this.imgCount.toString()+" - loading failed";
 			console.log("getResHandler is failed", url);
 			return;
 		}
+		this.menu1.m_txt_currCount.text = this.imgCount.toString()+" - loaded";
 		var bitmap: egret.Bitmap = new egret.Bitmap(tex);
 		var wHalf: number = bitmap.anchorOffsetX = tex.textureWidth / 2;
 		var hHalf: number = bitmap.anchorOffsetY = tex.textureHeight / 2;
@@ -74,6 +84,8 @@ class TestTextureMax {
 		bitmap.y = TestProfile.egretRoot.stage.stageHeight * Math.random();
 		this.list.push(bitmap);
 		TestProfile.egretRoot.addChild(bitmap);
+		//
+		this.addTextures();
 	}
 	private _play_tween0: boolean = false;
 	public get play_tween0(): boolean {

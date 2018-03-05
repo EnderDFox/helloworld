@@ -14,7 +14,8 @@
             "sourceMaps": true,
             // "userDataDir": "${workspaceRoot}/bin",
             "runtimeArgs": [
-                "--disable-web-security",
+                "--auto-open-devtools-for-tabs",
+                // "--disable-web-security",
                 // "--nolazy",
                 // "--remote-debugging-port=9222",
                 "--allow-file-access-from-files"

@@ -10,13 +10,13 @@
 		"libs/fairygui/fairygui.js"
 	],
 	"game": [
+		"bin-debug/SDKAdapterEgret.js",
 		"bin-debug/tests/Comp1.js",
-		"bin-debug/Main.js",
 		"bin-debug/fuis/Package1/Package1Binder.js",
 		"bin-debug/fuis/Package1/UI_Button1.js",
 		"bin-debug/fuis/Package1/UI_Comp1.js",
 		"bin-debug/fuis/Package1/UI_Menu1.js",
-		"bin-debug/SDKAdapterEgret.js",
+		"bin-debug/Main.js",
 		"bin-debug/tests/TestCPUCalculate.js",
 		"bin-debug/tests/TestFairyGUI.js",
 		"bin-debug/tests/TestGPUDrawCall.js",

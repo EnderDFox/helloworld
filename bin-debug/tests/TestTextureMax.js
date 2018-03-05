@@ -12,7 +12,7 @@ var TestTextureMax = (function () {
         this.menu1.m_list0.itemRenderer = this.list0_itemRender.bind(this);
         SDKAdapterFG.GObject_addEventListener(this.menu1.m_list0, fairygui.ItemEvent.CLICK, this.list0_itemClick, this);
         //
-        this.menu1.m_list0.data = ["+1"];
+        this.menu1.m_list0.data = ["+1", "+5", "+10", "+20", "+50", "+100"];
         this.menu1.m_list0.numItems = this.menu1.m_list0.data.length;
         this.menu1.m_list0.refreshVirtualList();
         //---list1
@@ -25,6 +25,7 @@ var TestTextureMax = (function () {
         this.menu1.m_list1.refreshVirtualList();
         // this.menu1.m_list1.visible = false;
         //---txt
+        this.menu1.m_txt_currCount.text = "0";
         // this.menu1.m_txt_currCount.visible = false;
         //---
         TestMain.alignRightBottom(this.menu1);
@@ -43,7 +44,8 @@ var TestTextureMax = (function () {
     TestTextureMax.prototype.list0_itemClick = function (evt) {
         var item = evt.itemObject;
         var i = item.data;
-        this.addTexture(parseInt(this.menu1.m_list0.data[i]));
+        this.addTextureCount = parseInt(this.menu1.m_list0.data[i]);
+        this.addTextures();
     };
     TestTextureMax.prototype.list1_itemRender = function (i, item) {
         item.data = i;
@@ -58,16 +60,23 @@ var TestTextureMax = (function () {
                 break;
         }
     };
-    TestTextureMax.prototype.addTexture = function (count) {
-        this.imgCount++;
-        this.menu1.m_txt_currCount.text = this.imgCount.toString();
-        RES.getResAsync("testb" + this.imgCount + "_png", this.getResHandler, this);
+    TestTextureMax.prototype.addTextures = function () {
+        if (this.addTextureCount > 0) {
+            this.addTextureCount--;
+            this.menu1.enabled = false;
+            this.imgCount++;
+            this.menu1.m_txt_currCount.text = this.imgCount.toString() + " - loading";
+            RES.getResAsync("testb" + this.imgCount + "_png", this.getResHandler, this);
+        }
     };
     TestTextureMax.prototype.getResHandler = function (tex, url) {
+        this.menu1.enabled = true;
         if (!tex) {
+            this.menu1.m_txt_currCount.text = this.imgCount.toString() + " - loading failed";
             console.log("getResHandler is failed", url);
             return;
         }
+        this.menu1.m_txt_currCount.text = this.imgCount.toString() + " - loaded";
         var bitmap = new egret.Bitmap(tex);
         var wHalf = bitmap.anchorOffsetX = tex.textureWidth / 2;
         var hHalf = bitmap.anchorOffsetY = tex.textureHeight / 2;
@@ -75,6 +84,8 @@ var TestTextureMax = (function () {
         bitmap.y = TestProfile.egretRoot.stage.stageHeight * Math.random();
         this.list.push(bitmap);
         TestProfile.egretRoot.addChild(bitmap);
+        //
+        this.addTextures();
     };
     Object.defineProperty(TestTextureMax.prototype, "play_tween0", {
         get: function () {
