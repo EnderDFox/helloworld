@@ -7,6 +7,14 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "node TestNodeXlsx",
+            "program": "${workspaceFolder}/bin/example/TestNodeXlsx.js",
+            "args": [
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "node PerformanceTest",
             "program": "${workspaceFolder}/src/PerformanceTest.ts",
             "args": [

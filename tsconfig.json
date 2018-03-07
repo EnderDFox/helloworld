@@ -5,6 +5,7 @@
     "outDir": "bin/js",
     // "outFile": "bin/js/servers_bundle/bundle_server.js",
     "removeComments": false,
+    "allowJs": true,
     "sourceMap": true
   },
   "include": [
