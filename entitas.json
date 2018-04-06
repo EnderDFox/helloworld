@@ -3,8 +3,8 @@
   "src": "example/src",
   "debug": true,
   "output": {
-    "javascript": "bin-debug/generatedExtensions.js",
-    "typescript": "src/generatedComponents.ts",
+    "javascript": "resource/entitas/generatedExtensions.js",
+    "typescript": "src/auto/generatedComponents.ts",
     "declaration": "lib/example.d.ts"
   },
   "alloc": {

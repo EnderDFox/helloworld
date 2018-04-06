@@ -10,8 +10,8 @@ class Hello1{
         example.Pools.pool.createEntity
         systems = new entitas.Systems().add(example.Pools.pool.createSystem(example.MovementSystem))
         var e = example.Pools.pool.createEntity('m1');
-        e.addVelocity(1,3)
         e.addPosition(7,9)
+        e.addVelocity(1,3)
         systems.initialize()
         systems.execute()
     }
