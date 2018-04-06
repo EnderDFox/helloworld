@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "outDir": "bin-debug",
+        "experimentalDecorators": true,
+        "lib": [
+            "es5",
+            "dom",
+            "es2015.promise"
+        ],
+        "newLine": "LF",
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "types":[],
+        "sourceMap": false,
+        "strict": false
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
