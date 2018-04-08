@@ -2443,4 +2443,3 @@ var entitas;
         viewer.VisualDebugging = VisualDebugging;
     })(viewer = entitas.viewer || (entitas.viewer = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=entitas.js.map

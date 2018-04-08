@@ -20,6 +20,8 @@ module example {
     Enemy,
     Expires,
     Firing,
+    MyCompA,
+    MyCompB,
     Health,
     ParallaxStar,
     Player,
@@ -70,6 +72,13 @@ module example {
     public delay:number;
   }
   export class FiringComponent implements IComponent {
+  }
+  export class MyCompAComponent implements IComponent {
+    public valA:boolean;
+    public valB:number[];
+    public valC:Hello2[];
+  }
+  export class MyCompBComponent implements IComponent {
   }
   export class HealthComponent implements IComponent {
     public health:number;
@@ -137,7 +146,7 @@ module example {
     
     static get pool():Pool {
       if (Pools._pool == null) {
-        Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents, true);
+        Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents, false);
         entitas.viewer.VisualDebugging.init(Pools._pool);
       }
     

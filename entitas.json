@@ -1,7 +1,7 @@
 {
   "namespace": "example",
   "src": "example/src",
-  "debug": true,
+  "debug": false,
   "output": {
     "javascript": "resource/entitas/generatedExtensions.js",
     "typescript": "src/auto/generatedComponents.ts",
@@ -40,6 +40,12 @@
       "delay:number"
     ],
     "Firing": false,
+    "MyCompA":[
+      "valA:boolean",
+      "valB:number[]",
+      "valC:Hello2[]"
+    ],
+    "MyCompB":false,
     "Health": [
       "health:number",
       "maximumHealth:number"

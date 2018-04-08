@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Title index</title>
-    <script src="resource/entitas/entitas.min.js" type="text/javascript" ></script>
+    <script src="resource/entitas/entitas.js" type="text/javascript" ></script>
     <script src="bin-debug/auto/generatedComponents.js" type="text/javascript" ></script>
     <script src="resource/entitas/generatedExtensions.js" type="text/javascript" ></script>
 
@@ -14,9 +14,21 @@
 
 <body>
     <h1>This is index.html</h1>
-    <script>
-        console.log("hello world in body")
-    </script>
+    <div id="box" name="boxN">  
+        <p>LogBox</p>  
+    </div>
+
 </body>
 
+<script>
+    var _oldConsole = console.log;
+    console.log = function(...args){
+        _oldConsole.apply(null,args)
+        var logDiv = document.getElementById("box")
+        logDiv.innerHTML += "<p>"+args.join(" ")+"</p>"
+    }
+    console.log("hello world in body")
+
+    new Hello1().func1()
+    </script>  
 </html>
