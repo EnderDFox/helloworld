@@ -94,7 +94,7 @@ declare module entitas {
 }
 declare module entitas.utils {
     /**
-     * @class UUID a
+     * @class UUID
      */
     class UUID {
         /**

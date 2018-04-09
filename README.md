@@ -9,7 +9,9 @@ https://github.com/darkoverlordofdata/entitas-ts
 #### 1 安装entitas-ts
 
 ```
-git clone git@github.com:darkoverlordofdata/entitas-ts.git
+git clone https://github.com/MountainKingGame/entitas-ts.git  
+//这个git修噶了一些bug
+//原始git地址是git@github.com:darkoverlordofdata/entitas-ts.git
 cd entitas-ts
 npm install . -g
 ```
@@ -42,6 +44,12 @@ entitas generate
 2. 创建入口Hello1.ts编写初始化代码
 
 3. 编写 index.html 注意js的引用顺序
+
+```
+    <script src="resource/entitas/entitas.js" type="text/javascript" ></script>
+    <script src="bin-debug/auto/generatedComponents.js" type="text/javascript" ></script>
+    <script src="resource/entitas/generatedExtensions.js" type="text/javascript" ></script>
+```
 
 ### 测试
 
