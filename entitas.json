@@ -1,7 +1,7 @@
 {
   "namespace": "example",
   "src": "example/src",
-  "debug": true,
+  "debug": false,
   "output": {
     "javascript": "resource/entitas/generatedExtensions.js",
     "typescript": "src/auto/generatedComponents.ts",
