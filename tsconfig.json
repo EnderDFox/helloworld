@@ -16,6 +16,8 @@
         "strict": false
     },
     "exclude": [
+        "temp",
+        "raw",
         "node_modules"
     ]
 }
