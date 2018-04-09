@@ -16,8 +16,6 @@
   var EnemyComponent = example.EnemyComponent;
   var ExpiresComponent = example.ExpiresComponent;
   var FiringComponent = example.FiringComponent;
-  var MyCompAComponent = example.MyCompAComponent;
-  var MyCompBComponent = example.MyCompBComponent;
   var HealthComponent = example.HealthComponent;
   var ParallaxStarComponent = example.ParallaxStarComponent;
   var PlayerComponent = example.PlayerComponent;
@@ -335,94 +333,6 @@
    */
   Entity.prototype.setFiring = function(value) {
     this.isFiring = value;
-    return this;
-  };
-  /** @type {entitas.utils.Bag} */
-  Entity._myCompAComponentPool = new Bag();
-  (function() {
-    for (var i=0; i<128; i++) {
-      Entity._myCompAComponentPool.add(new MyCompAComponent());
-    }
-  })();
-  Entity.clearMyCompAComponentPool = function() {
-    Entity._myCompAComponentPool.clear();
-  };
-  /** @type {{example.MyCompAComponent} */
-  Object.defineProperty(Entity.prototype, 'myCompA', {
-    get: function() {
-      return this.getComponent(CoreComponentIds.MyCompA);
-    }
-  });
-  /** @type {boolean} */
-  Object.defineProperty(Entity.prototype, 'hasMyCompA', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.MyCompA);
-    }
-  });
-  /**
-   * @param {boolean} valA
-   * @param {number[]} valB
-   * @param {Hello2[]} valC
-   * @returns {entitas.Entity}
-   */
-  Entity.prototype.addMyCompA = function(valA, valB, valC) {
-    var component = Entity._myCompAComponentPool.size() > 0 ? Entity._myCompAComponentPool.removeLast() : new MyCompAComponent();
-    component.valA = valA;
-    component.valB = valB;
-    component.valC = valC;
-    this.addComponent(CoreComponentIds.MyCompA, component);
-    return this;
-  };
-  /**
-   * @param {boolean} valA
-   * @param {number[]} valB
-   * @param {Hello2[]} valC
-   * @returns {entitas.Entity}
-   */
-  Entity.prototype.replaceMyCompA = function(valA, valB, valC) {
-    var previousComponent = this.hasMyCompA ? this.myCompA : null;
-    var component = Entity._myCompAComponentPool.size() > 0 ? Entity._myCompAComponentPool.removeLast() : new MyCompAComponent();
-    component.valA = valA;
-    component.valB = valB;
-    component.valC = valC;
-    this.replaceComponent(CoreComponentIds.MyCompA, component);
-    if (previousComponent != null) {
-      Entity._myCompAComponentPool.add(previousComponent);
-    }
-    return this;
-  };
-  /**
-   * @returns {entitas.Entity}
-   */
-  Entity.prototype.removeMyCompA = function() {
-    var component = this.myCompA;
-    this.removeComponent(CoreComponentIds.MyCompA);
-    Entity._myCompAComponentPool.add(component);
-    return this;
-  };
-  /** @type {example.MyCompBComponent} */
-  Entity.myCompBComponent = new MyCompBComponent();
-  /** @type {boolean} */
-  Object.defineProperty(Entity.prototype, 'isMyCompB', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.MyCompB);
-    },
-    set: function(value) {
-      if (value !== this.isMyCompB) {
-        if (value) {
-          this.addComponent(CoreComponentIds.MyCompB, Entity.myCompBComponent);
-        } else {
-          this.removeComponent(CoreComponentIds.MyCompB);
-        }
-      }
-    }
-  });
-  /**
-   * @param {boolean} value
-   * @returns {entitas.Entity}
-   */
-  Entity.prototype.setMyCompB = function(value) {
-    this.isMyCompB = value;
     return this;
   };
   /** @type {entitas.utils.Bag} */
@@ -1221,32 +1131,6 @@
       }
       
       return Matcher._matcherFiring;
-    }
-  });
-  /** @type {entitas.Matcher} */
-  Matcher._matcherMyCompA=null;
-  
-  /** @type {entitas.Matcher} */
-  Object.defineProperty(Matcher, 'MyCompA', {
-    get: function() {
-      if (Matcher._matcherMyCompA == null) {
-        Matcher._matcherMyCompA = Matcher.allOf(CoreComponentIds.MyCompA);
-      }
-      
-      return Matcher._matcherMyCompA;
-    }
-  });
-  /** @type {entitas.Matcher} */
-  Matcher._matcherMyCompB=null;
-  
-  /** @type {entitas.Matcher} */
-  Object.defineProperty(Matcher, 'MyCompB', {
-    get: function() {
-      if (Matcher._matcherMyCompB == null) {
-        Matcher._matcherMyCompB = Matcher.allOf(CoreComponentIds.MyCompB);
-      }
-      
-      return Matcher._matcherMyCompB;
     }
   });
   /** @type {entitas.Matcher} */

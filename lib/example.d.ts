@@ -1,97 +1,6 @@
 /**
  * Entitas-ECS definitions for example
  */
-declare module entitas {
-
-    class BoundsComponent implements IComponent {
-      public radius:number;
-    }
-    class BulletComponent implements IComponent {
-    }
-    class ColorAnimationComponent implements IComponent {
-      public redMin:number;
-      public redMax:number;
-      public redSpeed:number;
-      public greenMin:number;
-      public greenMax:number;
-      public greenSpeed:number;
-      public blueMin:number;
-      public blueMax:number;
-      public blueSpeed:number;
-      public alphaMin:number;
-      public alphaMax:number;
-      public alphaSpeed:number;
-      public redAnimate:boolean;
-      public greenAnimate:boolean;
-      public blueAnimate:boolean;
-      public alphaAnimate:boolean;
-      public repeat:boolean;
-    }
-    class EnemyComponent implements IComponent {
-    }
-    class ExpiresComponent implements IComponent {
-      public delay:number;
-    }
-    class FiringComponent implements IComponent {
-    }
-    class MyCompAComponent implements IComponent {
-      public valA:boolean;
-      public valB:number[];
-      public valC:Hello2[];
-    }
-    class MyCompBComponent implements IComponent {
-    }
-    class HealthComponent implements IComponent {
-      public health:number;
-      public maximumHealth:number;
-    }
-    class ParallaxStarComponent implements IComponent {
-    }
-    class PlayerComponent implements IComponent {
-    }
-    class PositionComponent implements IComponent {
-      public x:number;
-      public y:number;
-    }
-    class ScaleAnimationComponent implements IComponent {
-      public min:number;
-      public max:number;
-      public speed:number;
-      public repeat:boolean;
-      public active:boolean;
-    }
-    class SoundEffectComponent implements IComponent {
-      public effect:number;
-    }
-    class SpriteComponent implements IComponent {
-      public layer:number;
-      public object:Object;
-    }
-    class VelocityComponent implements IComponent {
-      public x:number;
-      public y:number;
-    }
-    class ScoreComponent implements IComponent {
-      public value:number;
-    }
-    class DestroyComponent implements IComponent {
-    }
-    class MouseComponent implements IComponent {
-      public x:number;
-      public y:number;
-    }
-    class ScaleComponent implements IComponent {
-      public x:number;
-      public y:number;
-    }
-    class ResourceComponent implements IComponent {
-      public name:string;
-    }
-    class LayerComponent implements IComponent {
-      public ordinal:number;
-    }
-
-}
 declare module entitas.utils {
     /**
      * @class UUID
@@ -311,6 +220,88 @@ declare module entitas.utils {
 declare module entitas {
     interface IComponent {
     }
+
+    class BoundsComponent implements IComponent {
+      public radius:number;
+    }
+    class BulletComponent implements IComponent {
+    }
+    class ColorAnimationComponent implements IComponent {
+      public redMin:number;
+      public redMax:number;
+      public redSpeed:number;
+      public greenMin:number;
+      public greenMax:number;
+      public greenSpeed:number;
+      public blueMin:number;
+      public blueMax:number;
+      public blueSpeed:number;
+      public alphaMin:number;
+      public alphaMax:number;
+      public alphaSpeed:number;
+      public redAnimate:boolean;
+      public greenAnimate:boolean;
+      public blueAnimate:boolean;
+      public alphaAnimate:boolean;
+      public repeat:boolean;
+    }
+    class EnemyComponent implements IComponent {
+    }
+    class ExpiresComponent implements IComponent {
+      public delay:number;
+    }
+    class FiringComponent implements IComponent {
+    }
+    class HealthComponent implements IComponent {
+      public health:number;
+      public maximumHealth:number;
+    }
+    class ParallaxStarComponent implements IComponent {
+    }
+    class PlayerComponent implements IComponent {
+    }
+    class PositionComponent implements IComponent {
+      public x:number;
+      public y:number;
+    }
+    class ScaleAnimationComponent implements IComponent {
+      public min:number;
+      public max:number;
+      public speed:number;
+      public repeat:boolean;
+      public active:boolean;
+    }
+    class SoundEffectComponent implements IComponent {
+      public effect:number;
+    }
+    class SpriteComponent implements IComponent {
+      public layer:number;
+      public object:Object;
+    }
+    class VelocityComponent implements IComponent {
+      public x:number;
+      public y:number;
+    }
+    class ScoreComponent implements IComponent {
+      public value:number;
+    }
+    class DestroyComponent implements IComponent {
+    }
+    class MouseComponent implements IComponent {
+      public x:number;
+      public y:number;
+    }
+    class ScaleComponent implements IComponent {
+      public x:number;
+      public y:number;
+    }
+    class ResourceComponent implements IComponent {
+      public name:string;
+    }
+    class LayerComponent implements IComponent {
+      public ordinal:number;
+    }
+
 }
 declare module entitas {
     interface IMatcher {
@@ -532,10 +523,6 @@ declare module entitas {
         static Expires: Matcher;
         static _matcherFiring;
         static Firing: Matcher;
-        static _matcherMyCompA;
-        static MyCompA: Matcher;
-        static _matcherMyCompB;
-        static MyCompB: Matcher;
         static _matcherHealth;
         static Health: Matcher;
         static _matcherParallaxStar;
@@ -726,16 +713,6 @@ declare module entitas {
         static firingComponent: FiringComponent;
         isFiring: boolean;
         setFiring(value: boolean);
-        static _myCompAComponentPool;
-        static clearMyCompAComponentPool();
-        myCompA: MyCompAComponent;
-        hasMyCompA: boolean;
-        addMyCompA(valA:boolean, valB:number[], valC:Hello2[]);
-        replaceMyCompA(valA:boolean, valB:number[], valC:Hello2[]);
-        removeMyCompA();
-        static myCompBComponent: MyCompBComponent;
-        isMyCompB: boolean;
-        setMyCompB(value: boolean);
         static _healthComponentPool;
         static clearHealthComponentPool();
         health: HealthComponent;
